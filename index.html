@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Loto Tân Tân</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+
+  <body>
+    <div class="wrap">
+      <!-- SCREEN 1: CHỌN BOARD -->
+      <div id="selectScreen">
+        <h2>🎯 Chọn bàn Loto</h2>
+        <div class="board-list" id="boardList"></div>
+      </div>
+
+      <!-- SCREEN 2: CHƠI -->
+      <div id="gameScreen" class="hidden">
+        <div class="actions">
+          <input id="numberInput" type="number" placeholder="Nhập số → Enter" />
+          <button id="btnReset">Reset ván mới</button>
+          <button id="btnBack">← Đổi bàn</button>
+        </div>
+
+        <div class="board" id="board"></div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
