@@ -83,7 +83,7 @@ h2 {
 
 .actions {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto auto auto;
   gap: 8px;
   align-items: center;
   margin: 6px 0 10px;
@@ -91,6 +91,37 @@ h2 {
   border-radius: 12px;
   background: #f8fafc;
   border: 1px solid var(--border);
+}
+
+.color-picker-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.color-picker-wrap:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.color-picker-wrap input[type="color"] {
+  width: 150%;
+  height: 150%;
+  border: none;
+  padding: 0;
+  margin: -25%;
+  cursor: pointer;
+  background: none;
+  outline: none;
+  box-shadow: none;
 }
 
 input {
@@ -201,6 +232,10 @@ button:active {
     border-radius: 7px;
   }
   .actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+  .actions input {
+    grid-column: 1 / -1;
   }
 }
