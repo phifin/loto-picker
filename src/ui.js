@@ -8,7 +8,6 @@ export class UIManager {
     this.boardListEl = elements.boardListEl;
     this.boardEl = elements.boardEl;
     this.colorPickerEl = elements.colorPickerEl;
-    this.rowCounterEl = elements.rowCounterEl;
   }
 
   showSelect() {
@@ -99,22 +98,7 @@ export class UIManager {
   }
 
   updateRowCounter(gameState) {
-    if (!this.rowCounterEl) return;
-    this.rowCounterEl.innerHTML = "";
-    
-    for (let r = 0; r < 9; r++) {
-      const cells = this.getRowCells(r);
-      const nums = cells.filter((c) => c.classList.contains("num"));
-      if (nums.length === 0) continue;
-      
-      const marked = nums.filter((c) => c.classList.contains("marked")).length;
-      const done = marked === 5;
-      
-      const pill = document.createElement("span");
-      pill.className = "row-pill" + (done ? " row-done" : "");
-      pill.innerHTML = `H${r + 1}: <b>${marked}</b>/<span>${nums.length}</span>${done ? " 🎉" : ""}`;
-      this.rowCounterEl.appendChild(pill);
-    }
+    // Row counter feature removed
   }
 
   getRowCells(rowIndex) {

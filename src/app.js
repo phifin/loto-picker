@@ -15,7 +15,6 @@ const elements = {
   btnReset: document.getElementById("btnReset"),
   btnBack: document.getElementById("btnBack"),
   colorPickerEl: document.getElementById("colorPicker"),
-  rowCounterEl: document.getElementById("rowCounter"),
 };
 
 // Initialize game components
