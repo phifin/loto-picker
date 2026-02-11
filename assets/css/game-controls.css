@@ -12,11 +12,6 @@
   border: 1px solid var(--border);
 }
 
-.actions .theme-toggle {
-  position: static;
-  margin: 0;
-}
-
 .color-picker-wrap {
   display: flex;
   align-items: center;

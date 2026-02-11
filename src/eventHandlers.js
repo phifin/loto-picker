@@ -72,9 +72,26 @@ export function setupEventHandlers(elements, gameState, uiManager, gameLogic, bo
   // Back button handler
   btnBack.onclick = () => {
     gameState.clearState();
-    multiBoardMgr.reset();
     uiManager.clearBoard();
-    uiManager.showMode();
+    
+    // Return to appropriate screen based on mode
+    if (multiBoardMgr.isMulti()) {
+      // Multi mode: go back to board selection
+      uiManager.showSelect(true);
+      uiManager.renderBoardList(boards, (board) => {
+        multiBoardMgr.toggleBoard(board);
+        const count = multiBoardMgr.getSelectedCount();
+        uiManager.updateSelectedCount(count);
+        elements.btnStartMulti.disabled = count < 2;
+        uiManager.renderBoardList(boards, arguments.callee, multiBoardMgr);
+      }, multiBoardMgr);
+      uiManager.updateSelectedCount(multiBoardMgr.getSelectedCount());
+      elements.btnStartMulti.disabled = multiBoardMgr.getSelectedCount() < 2;
+    } else {
+      // Single mode: go back to board selection
+      uiManager.showSelect(false);
+      uiManager.renderBoardList(boards, startGame);
+    }
   };
 }
 
