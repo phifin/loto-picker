@@ -52,6 +52,7 @@ elements.btnMultiMode.onclick = () => {
   uiManager.showSelect(true);
   uiManager.renderBoardList(LOTO_DATA, toggleBoardSelection, multiBoardMgr);
   uiManager.updateSelectedCount(0);
+  // Require at least 2 boards
   elements.btnStartMulti.disabled = true;
 };
 
@@ -60,7 +61,8 @@ function toggleBoardSelection(board) {
   multiBoardMgr.toggleBoard(board);
   const count = multiBoardMgr.getSelectedCount();
   uiManager.updateSelectedCount(count);
-  elements.btnStartMulti.disabled = count === 0;
+  // Require at least 2 boards for multi-mode
+  elements.btnStartMulti.disabled = count < 2;
   uiManager.renderBoardList(LOTO_DATA, toggleBoardSelection, multiBoardMgr);
 }
 
@@ -78,8 +80,10 @@ function startSingleGame(boardData) {
   gameState.resetForNewGame();
   elements.inputEl.value = "";
   
-  // Hide color picker in single mode - not needed
-  elements.colorPickerWrap.style.display = "none";
+  // Show color picker in single mode
+  elements.colorPickerWrap.style.display = "flex";
+  const color = loadColor(boardData.id, boardData.color);
+  elements.colorPickerEl.value = color;
 
   // Render single board
   const boardWrapper = document.createElement("div");
@@ -88,7 +92,6 @@ function startSingleGame(boardData) {
   const boardElement = document.createElement("div");
   boardElement.className = "board";
   
-  const color = loadColor(boardData.id, boardData.color);
   boardElement.style.setProperty("--cell-color", color);
   
   boardData.data.forEach((row, rowIndex) => {
