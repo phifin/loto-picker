@@ -22,6 +22,17 @@ export class UIManager {
 
   renderBoardList(boards, onBoardSelect) {
     this.boardListEl.innerHTML = "";
+    
+    // Create or get preview container
+    let previewContainer = document.getElementById("previewContainer");
+    if (!previewContainer) {
+      previewContainer = document.createElement("div");
+      previewContainer.id = "previewContainer";
+      previewContainer.className = "preview-container";
+      document.body.appendChild(previewContainer);
+    }
+    previewContainer.innerHTML = "";
+    
     boards.forEach((b) => {
       const wrap = document.createElement("div");
       wrap.className = "board-btn-wrap";
@@ -43,8 +54,24 @@ export class UIManager {
       btn.appendChild(label);
       btn.onclick = () => onBoardSelect(b);
 
+      // Create preview and add to container
+      const preview = this.buildMiniPreview(b);
+      preview.dataset.boardId = b.id;
+      previewContainer.appendChild(preview);
+
+      // Handle hover to show/hide preview
+      wrap.addEventListener("mouseenter", (e) => {
+        const rect = btn.getBoundingClientRect();
+        preview.style.left = `${rect.left + rect.width / 2}px`;
+        preview.style.top = `${rect.bottom + 6}px`;
+        preview.classList.add("visible");
+      });
+      
+      wrap.addEventListener("mouseleave", () => {
+        preview.classList.remove("visible");
+      });
+
       wrap.appendChild(btn);
-      wrap.appendChild(this.buildMiniPreview(b));
       this.boardListEl.appendChild(wrap);
     });
   }
