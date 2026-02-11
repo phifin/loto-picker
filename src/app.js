@@ -25,7 +25,6 @@ const elements = {
   multiSelectInfo: document.getElementById("multiSelectInfo"),
   selectedCount: document.getElementById("selectedCount"),
   selectTitle: document.getElementById("selectTitle"),
-  themeToggle: document.getElementById("themeToggle"),
   themeToggleGame: document.getElementById("themeToggleGame"),
 };
 
@@ -36,8 +35,8 @@ const gameLogic = new GameLogic(uiManager);
 const multiBoardMgr = new MultiBoardManager();
 const themeManager = new ThemeManager();
 
-// Initialize theme with both toggle buttons
-themeManager.init(elements.themeToggle, [elements.themeToggleGame]);
+// Initialize theme with game toggle button
+themeManager.init(elements.themeToggleGame);
 watchSystemTheme(themeManager);
 
 // Mode selection handlers

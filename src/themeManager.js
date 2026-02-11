@@ -10,18 +10,16 @@ export class ThemeManager {
     this.toggleButtons = [];
   }
 
-  init(toggleButton, additionalButtons = []) {
-    this.toggleButtons = [toggleButton, ...additionalButtons];
+  init(toggleButton) {
+    this.toggleButtons = toggleButton ? [toggleButton] : [];
     
     // Apply saved theme
     this.applyTheme(this.currentTheme);
     
-    // Setup all toggle buttons
-    this.toggleButtons.forEach(btn => {
-      if (btn) {
-        btn.addEventListener('click', () => this.toggle());
-      }
-    });
+    // Setup toggle button
+    if (toggleButton) {
+      toggleButton.addEventListener('click', () => this.toggle());
+    }
   }
 
   loadTheme() {

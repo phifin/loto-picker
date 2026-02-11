@@ -46,8 +46,8 @@
 }
 
 input[type="number"] {
-  width: 100%;
-  max-width: 120px;
+  flex: 1;
+  min-width: 0;
   padding: 9px 12px;
   font-size: 14px;
   text-align: center;
