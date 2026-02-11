@@ -7,20 +7,21 @@ const THEME_DARK = 'dark';
 export class ThemeManager {
   constructor() {
     this.currentTheme = this.loadTheme();
-    this.sunIcon = null;
-    this.moonIcon = null;
+    this.toggleButtons = [];
   }
 
-  init(toggleButton) {
-    this.toggleButton = toggleButton;
-    this.sunIcon = toggleButton.querySelector('.sun-icon');
-    this.moonIcon = toggleButton.querySelector('.moon-icon');
+  init(toggleButton, additionalButtons = []) {
+    this.toggleButtons = [toggleButton, ...additionalButtons];
     
     // Apply saved theme
     this.applyTheme(this.currentTheme);
     
-    // Setup toggle button
-    toggleButton.addEventListener('click', () => this.toggle());
+    // Setup all toggle buttons
+    this.toggleButtons.forEach(btn => {
+      if (btn) {
+        btn.addEventListener('click', () => this.toggle());
+      }
+    });
   }
 
   loadTheme() {
@@ -54,15 +55,21 @@ export class ThemeManager {
   }
 
   updateIcons(isLight) {
-    if (!this.sunIcon || !this.moonIcon) return;
-    
-    if (isLight) {
-      this.sunIcon.classList.add('active');
-      this.moonIcon.classList.remove('active');
-    } else {
-      this.sunIcon.classList.remove('active');
-      this.moonIcon.classList.add('active');
-    }
+    this.toggleButtons.forEach(btn => {
+      if (!btn) return;
+      const sunIcon = btn.querySelector('.sun-icon');
+      const moonIcon = btn.querySelector('.moon-icon');
+      
+      if (sunIcon && moonIcon) {
+        if (isLight) {
+          sunIcon.classList.add('active');
+          moonIcon.classList.remove('active');
+        } else {
+          sunIcon.classList.remove('active');
+          moonIcon.classList.add('active');
+        }
+      }
+    });
   }
 
   toggle() {

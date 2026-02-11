@@ -18,6 +18,16 @@
   z-index: 1000;
 }
 
+/* Inline theme toggle in game screen */
+.theme-toggle-inline {
+  position: static;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  font-size: 18px;
+  box-shadow: none;
+}
+
 .theme-toggle:hover {
   transform: scale(1.05);
   border-color: #3b82f6;

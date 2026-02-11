@@ -45,11 +45,11 @@ export class BoardListRenderer {
         btn.appendChild(badge);
       }
       
-      // Add checkmark for multi-select mode
-      if (isMultiMode) {
+      // Add checkmark for multi-select mode (only if selected)
+      if (isMultiMode && multiBoardMgr.isSelected(b.id)) {
         const checkbox = document.createElement("span");
         checkbox.className = "board-checkbox";
-        checkbox.innerHTML = multiBoardMgr.isSelected(b.id) ? "✓" : "";
+        checkbox.innerHTML = "✓";
         btn.appendChild(checkbox);
       }
 
