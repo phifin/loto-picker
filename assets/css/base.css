@@ -1,16 +1,5 @@
 /* Base styles and variables */
-
-:root {
-  --bg: #f0f4f8;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #dde3ec;
-  --shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
-  --gap: 5px;
-  --danger: #ef4444;
-  --danger2: #ff2d55;
-}
+/* Theme variables are now in themes.css */
 
 * {
   box-sizing: border-box;
@@ -24,15 +13,11 @@ body {
     Segoe UI,
     Roboto,
     sans-serif;
-  background: radial-gradient(
-    1200px 500px at 50% 0%,
-    #eef6ff 0%,
-    var(--bg) 55%
-  );
   color: var(--text);
   display: grid;
   place-items: center;
   padding: 16px;
+  min-height: 100vh;
 }
 
 .wrap {
@@ -42,7 +27,8 @@ body {
   box-shadow: var(--shadow);
   width: min(1200px, 94vw);
   overflow: hidden;
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid var(--border);
+  position: relative;
 }
 
 h2 {

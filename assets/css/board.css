@@ -23,11 +23,12 @@
 }
 
 .empty {
-  background: rgba(0, 0, 0, 0.12);
+  background: var(--board-empty);
 }
 
 .num {
-  background: #fff;
+  background: var(--cell-bg);
+  color: var(--text);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition:
@@ -46,7 +47,7 @@
 
 /* Marked cells */
 .num.marked {
-  background: #fff0f0;
+  background: var(--cell-marked-bg);
   box-shadow: 0 1px 3px rgba(239, 68, 68, 0.12);
 }
 
@@ -85,7 +86,7 @@
 
 /* Row complete highlight */
 .cell.row-complete.num {
-  background: #fffbeb;
+  background: var(--cell-complete-bg);
   box-shadow:
     0 0 0 2px rgba(251, 191, 36, 0.7),
     0 2px 8px rgba(251, 191, 36, 0.2);
@@ -96,7 +97,7 @@
 }
 
 .cell.row-complete.num.marked {
-  background: #fef3c7;
+  background: var(--cell-complete-marked-bg);
 }
 
 /* Multi-board layout */
@@ -125,7 +126,7 @@
 .board-header {
   text-align: center;
   padding: 8px;
-  background: #f8fafc;
+  background: var(--bg-secondary);
   border-radius: 8px;
   border: 1px solid var(--border);
 }

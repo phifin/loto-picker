@@ -3,6 +3,7 @@ import { GameState } from "./gameState.js";
 import { UIManager } from "./ui/uiManager.js";
 import { GameLogic } from "./gameLogic.js";
 import { MultiBoardManager } from "./multiBoard.js";
+import { ThemeManager, watchSystemTheme } from "./themeManager.js";
 import { loadColor, loadMarked } from "./storage.js";
 import { setupEventHandlers, createCellClickHandler, createMultiCellClickHandler } from "./eventHandlers.js";
 
@@ -24,6 +25,7 @@ const elements = {
   multiSelectInfo: document.getElementById("multiSelectInfo"),
   selectedCount: document.getElementById("selectedCount"),
   selectTitle: document.getElementById("selectTitle"),
+  themeToggle: document.getElementById("themeToggle"),
 };
 
 // Initialize game components
@@ -31,6 +33,11 @@ const gameState = new GameState();
 const uiManager = new UIManager(elements);
 const gameLogic = new GameLogic(uiManager);
 const multiBoardMgr = new MultiBoardManager();
+const themeManager = new ThemeManager();
+
+// Initialize theme
+themeManager.init(elements.themeToggle);
+watchSystemTheme(themeManager);
 
 // Mode selection handlers
 elements.btnSingleMode.onclick = () => {

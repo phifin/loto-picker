@@ -1,6 +1,8 @@
 /* Main stylesheet - imports all modular CSS files */
 
 @import url('./css/base.css');
+@import url('./css/themes.css');
+@import url('./css/theme-toggle.css');
 @import url('./css/mode-selection.css');
 @import url('./css/board-selection.css');
 @import url('./css/preview.css');

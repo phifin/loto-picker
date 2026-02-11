@@ -1,0 +1,157 @@
+/* Theme variables and dark mode styles */
+
+:root {
+  /* Light theme (default) */
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #dde3ec;
+  --shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
+  --gap: 5px;
+  --danger: #ef4444;
+  --danger2: #ff2d55;
+  
+  /* Additional theme colors */
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --hover-bg: rgba(59, 130, 246, 0.1);
+  --input-bg: #ffffff;
+  --board-empty: rgba(0, 0, 0, 0.12);
+  --cell-bg: #ffffff;
+  --cell-marked-bg: #fff0f0;
+  --cell-complete-bg: #fffbeb;
+  --cell-complete-marked-bg: #fef3c7;
+  --preview-border: rgba(255, 255, 255, 0.3);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #334155;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  
+  /* Dark mode specific colors */
+  --bg-secondary: #334155;
+  --bg-tertiary: #475569;
+  --hover-bg: rgba(59, 130, 246, 0.2);
+  --input-bg: #334155;
+  --board-empty: rgba(255, 255, 255, 0.1);
+  --cell-bg: #475569;
+  --cell-marked-bg: #7f1d1d;
+  --cell-complete-bg: #713f12;
+  --cell-complete-marked-bg: #854d0e;
+  --preview-border: rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth theme transition */
+body,
+.wrap,
+.board-btn,
+.cell,
+.mode-btn,
+input,
+button {
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* Update base styles to use theme variables */
+body {
+  background: radial-gradient(
+    1200px 500px at 50% 0%,
+    var(--bg-secondary) 0%,
+    var(--bg) 55%
+  );
+}
+
+.wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+/* Dark mode adjustments for specific elements */
+[data-theme="dark"] .mode-btn {
+  background: linear-gradient(135deg, var(--card) 0%, var(--bg-secondary) 100%);
+}
+
+[data-theme="dark"] .board-btn {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .board-btn:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] .color-picker-wrap {
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+[data-theme="dark"] .actions {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .selected-boards-container,
+[data-theme="dark"] .board-header {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .cell.empty {
+  background: var(--board-empty);
+}
+
+[data-theme="dark"] .cell.num {
+  background: var(--cell-bg);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .cell.num:hover {
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .num.marked {
+  background: var(--cell-marked-bg);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .cell.row-complete.num {
+  background: var(--cell-complete-bg);
+  color: #fef3c7;
+  box-shadow:
+    0 0 0 2px rgba(251, 191, 36, 0.5),
+    0 2px 8px rgba(251, 191, 36, 0.2);
+}
+
+[data-theme="dark"] .cell.row-complete.empty {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+[data-theme="dark"] .cell.row-complete.num.marked {
+  background: var(--cell-complete-marked-bg);
+  color: #fef3c7;
+}
+
+[data-theme="dark"] .mini-preview {
+  background: var(--prev-color, #555);
+  border: 2px solid var(--preview-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .mini-num {
+  background: rgba(71, 85, 105, 0.95);
+  color: var(--text);
+}
+
+[data-theme="dark"] .mini-marked {
+  background: rgba(127, 29, 29, 0.95);
+  color: #fca5a5;
+}
