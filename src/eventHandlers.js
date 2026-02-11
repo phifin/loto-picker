@@ -1,7 +1,7 @@
 // Event handlers setup
 import { saveMarked, clearMarked } from "./storage.js";
 
-export function setupEventHandlers(elements, gameState, uiManager, gameLogic) {
+export function setupEventHandlers(elements, gameState, uiManager, gameLogic, boards, startGame) {
   const { inputEl, btnReset, btnBack, colorPickerEl } = elements;
 
   // Number input handler
@@ -42,6 +42,7 @@ export function setupEventHandlers(elements, gameState, uiManager, gameLogic) {
   btnBack.onclick = () => {
     gameState.clearState();
     uiManager.clearBoard();
+    uiManager.refreshBoardList(boards, startGame);
     uiManager.showSelect();
   };
 }

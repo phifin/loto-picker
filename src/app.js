@@ -22,9 +22,6 @@ const gameState = new GameState();
 const uiManager = new UIManager(elements);
 const gameLogic = new GameLogic(uiManager);
 
-// Setup event handlers
-setupEventHandlers(elements, gameState, uiManager, gameLogic);
-
 // Game start handler
 function startGame(boardData) {
   gameState.setCurrentBoard(boardData);
@@ -47,6 +44,9 @@ function startGame(boardData) {
   uiManager.showGame();
   elements.inputEl.focus();
 }
+
+// Setup event handlers with board data and startGame callback
+setupEventHandlers(elements, gameState, uiManager, gameLogic, LOTO_DATA, startGame);
 
 // Initial render
 function init() {

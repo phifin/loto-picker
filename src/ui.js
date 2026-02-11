@@ -15,6 +15,11 @@ export class UIManager {
     this.gameScreen.classList.add("hidden");
   }
 
+  refreshBoardList(boards, onBoardSelect) {
+    // Re-render the entire board list to update preview states
+    this.renderBoardList(boards, onBoardSelect);
+  }
+
   showGame() {
     this.selectScreen.classList.add("hidden");
     this.gameScreen.classList.remove("hidden");
