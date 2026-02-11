@@ -59,10 +59,12 @@ export class UIManager {
     board.data.forEach((row) => {
       row.forEach((v) => {
         const cell = document.createElement("div");
-        cell.className =
-          v === null
-            ? "mini-cell mini-empty"
-            : "mini-cell mini-num" + (saved.has(v) ? " mini-marked" : "");
+        if (v === null) {
+          cell.className = "mini-cell mini-empty";
+        } else {
+          cell.className = "mini-cell mini-num" + (saved.has(v) ? " mini-marked" : "");
+          cell.textContent = v;
+        }
         preview.appendChild(cell);
       });
     });
