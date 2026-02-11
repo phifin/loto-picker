@@ -119,18 +119,18 @@
 
 .board-wrapper.single-board {
   grid-column: 1 / -1;
-  max-width: 800px;
+  max-width: 650px;
   width: 100%;
   margin: 0 auto;
 }
 
 .board-wrapper.single-board .board {
-  padding: 14px;
-  gap: 6px;
+  padding: 12px;
+  gap: 5px;
 }
 
 .board-wrapper.single-board .cell {
-  font-size: clamp(16px, 3vw, 28px);
+  font-size: clamp(14px, 2.5vw, 20px);
 }
 
 .board-header {
