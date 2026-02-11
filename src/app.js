@@ -1,40 +1,109 @@
 import { LOTO_DATA } from "./boards.js";
 import { GameState } from "./gameState.js";
-import { UIManager } from "./ui.js";
+import { UIManager } from "./ui/uiManager.js";
 import { GameLogic } from "./gameLogic.js";
-import { loadColor } from "./storage.js";
-import { setupEventHandlers, createCellClickHandler } from "./eventHandlers.js";
+import { MultiBoardManager } from "./multiBoard.js";
+import { loadColor, loadMarked } from "./storage.js";
+import { setupEventHandlers, createCellClickHandler, createMultiCellClickHandler } from "./eventHandlers.js";
 
 // DOM elements
 const elements = {
+  modeScreen: document.getElementById("modeScreen"),
   selectScreen: document.getElementById("selectScreen"),
   gameScreen: document.getElementById("gameScreen"),
   boardListEl: document.getElementById("boardList"),
-  boardEl: document.getElementById("board"),
+  boardsContainer: document.getElementById("boardsContainer"),
   inputEl: document.getElementById("numberInput"),
   btnReset: document.getElementById("btnReset"),
   btnBack: document.getElementById("btnBack"),
+  btnSingleMode: document.getElementById("btnSingleMode"),
+  btnMultiMode: document.getElementById("btnMultiMode"),
+  btnStartMulti: document.getElementById("btnStartMulti"),
   colorPickerEl: document.getElementById("colorPicker"),
+  colorPickerWrap: document.getElementById("colorPickerWrap"),
+  multiSelectInfo: document.getElementById("multiSelectInfo"),
+  selectedCount: document.getElementById("selectedCount"),
+  selectTitle: document.getElementById("selectTitle"),
 };
 
 // Initialize game components
 const gameState = new GameState();
 const uiManager = new UIManager(elements);
 const gameLogic = new GameLogic(uiManager);
+const multiBoardMgr = new MultiBoardManager();
 
-// Game start handler
-function startGame(boardData) {
+// Mode selection handlers
+elements.btnSingleMode.onclick = () => {
+  multiBoardMgr.setMode(false);
+  uiManager.showSelect(false);
+  uiManager.renderBoardList(LOTO_DATA, startSingleGame);
+};
+
+elements.btnMultiMode.onclick = () => {
+  multiBoardMgr.setMode(true);
+  multiBoardMgr.clearSelection();
+  uiManager.showSelect(true);
+  uiManager.renderBoardList(LOTO_DATA, toggleBoardSelection, multiBoardMgr);
+  uiManager.updateSelectedCount(0);
+  elements.btnStartMulti.disabled = true;
+};
+
+// Board selection handler for multi-mode
+function toggleBoardSelection(board) {
+  multiBoardMgr.toggleBoard(board);
+  const count = multiBoardMgr.getSelectedCount();
+  uiManager.updateSelectedCount(count);
+  elements.btnStartMulti.disabled = count === 0;
+  uiManager.renderBoardList(LOTO_DATA, toggleBoardSelection, multiBoardMgr);
+}
+
+// Start multi-board game
+elements.btnStartMulti.onclick = () => {
+  const selectedBoards = multiBoardMgr.getSelectedBoards();
+  if (selectedBoards.length === 0) return;
+  
+  startMultiGame(selectedBoards);
+};
+
+// Single board game handler
+function startSingleGame(boardData) {
   gameState.setCurrentBoard(boardData);
   gameState.resetForNewGame();
   elements.inputEl.value = "";
+  
+  // Hide color picker in single mode - not needed
+  elements.colorPickerWrap.style.display = "none";
 
-  // Load and apply color
+  // Render single board
+  const boardWrapper = document.createElement("div");
+  boardWrapper.className = "board-wrapper single-board";
+  
+  const boardElement = document.createElement("div");
+  boardElement.className = "board";
+  
   const color = loadColor(boardData.id, boardData.color);
-  uiManager.applyBoardColor(color, boardData.id);
-
-  // Render board with cell click handler
-  const cellClickHandler = createCellClickHandler(gameState, gameLogic, uiManager);
-  uiManager.renderBoard(boardData.data, gameState, cellClickHandler);
+  boardElement.style.setProperty("--cell-color", color);
+  
+  boardData.data.forEach((row, rowIndex) => {
+    row.forEach((v) => {
+      const div = document.createElement("div");
+      div.dataset.row = rowIndex;
+      if (v === null) {
+        div.className = "cell empty";
+      } else {
+        div.className = "cell num";
+        div.textContent = v;
+        gameState.addCell(v, div, rowIndex);
+        const cellClickHandler = createCellClickHandler(gameState, gameLogic, uiManager, boardData.id);
+        div.onclick = () => cellClickHandler(div, rowIndex);
+      }
+      boardElement.appendChild(div);
+    });
+  });
+  
+  boardWrapper.appendChild(boardElement);
+  elements.boardsContainer.innerHTML = "";
+  elements.boardsContainer.appendChild(boardWrapper);
 
   // Restore saved state
   gameLogic.restoreMarked(boardData.id, gameState);
@@ -45,13 +114,46 @@ function startGame(boardData) {
   elements.inputEl.focus();
 }
 
-// Setup event handlers with board data and startGame callback
-setupEventHandlers(elements, gameState, uiManager, gameLogic, LOTO_DATA, startGame);
+// Multi board game handler
+function startMultiGame(boards) {
+  multiBoardMgr.clearBoardStates();
+  elements.inputEl.value = "";
+  
+  // Hide color picker in multi mode
+  elements.colorPickerWrap.style.display = "none";
+  
+  // Create multi-cell click handler
+  const multiCellClickHandler = createMultiCellClickHandler(multiBoardMgr, gameLogic, uiManager, boards);
+  
+  // Render all boards
+  uiManager.renderMultipleBoards(boards, multiBoardMgr, multiCellClickHandler);
+  
+  // Restore saved state for each board
+  boards.forEach(board => {
+    const boardState = multiBoardMgr.getBoardState(board.id);
+    const saved = loadMarked(board.id);
+    saved.forEach(num => {
+      const entry = boardState.cellMap.get(num);
+      if (entry) entry.el.classList.add("marked");
+    });
+    
+    // Check rows silently
+    for (let r = 0; r < 9; r++) {
+      gameLogic.checkRowSilentMulti(board.id, r, multiBoardMgr, uiManager);
+    }
+  });
+  
+  // Show game screen and focus input
+  uiManager.showGame();
+  elements.inputEl.focus();
+}
+
+// Setup event handlers with board data and game functions
+setupEventHandlers(elements, gameState, uiManager, gameLogic, LOTO_DATA, startSingleGame, multiBoardMgr, startMultiGame);
 
 // Initial render
 function init() {
-  uiManager.renderBoardList(LOTO_DATA, startGame);
-  uiManager.showSelect();
+  uiManager.showMode();
 }
 
 // Start the app

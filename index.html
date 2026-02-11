@@ -15,22 +15,48 @@
   </head>
   <body>
     <div class="wrap">
-      <div id="selectScreen">
-        <h2>🎯 Chọn bàn Loto</h2>
+      <!-- Mode Selection Screen -->
+      <div id="modeScreen">
+        <h2>🎯 Loto Tân Tân</h2>
+        <p class="mode-subtitle">Chọn cách chơi của bạn</p>
+        <div class="mode-selection">
+          <button class="mode-btn" id="btnSingleMode">
+            <span class="mode-icon">🎲</span>
+            <span class="mode-title">Chơi 1 bàn</span>
+            <span class="mode-desc">Tập trung vào một bàn duy nhất</span>
+          </button>
+          <button class="mode-btn" id="btnMultiMode">
+            <span class="mode-icon">🎰</span>
+            <span class="mode-title">Chơi nhiều bàn</span>
+            <span class="mode-desc">Đánh dấu đồng bộ trên nhiều bàn</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Board Selection Screen -->
+      <div id="selectScreen" class="hidden">
+        <h2 id="selectTitle">🎯 Chọn bàn Loto</h2>
+        <div id="multiSelectInfo" class="hidden multi-select-info">
+          <div class="selected-boards-container">
+            <span class="selected-label">Đã chọn: <strong id="selectedCount">0</strong> bàn</span>
+            <button id="btnStartMulti" class="btn-start-multi" disabled>Bắt đầu chơi</button>
+          </div>
+        </div>
         <div class="board-list" id="boardList"></div>
       </div>
 
+      <!-- Game Screen -->
       <div id="gameScreen" class="hidden">
         <div class="actions">
           <input id="numberInput" type="number" placeholder="Nhập số → Enter" />
-          <label class="color-picker-wrap" title="Đổi màu bàn">
+          <label class="color-picker-wrap" title="Đổi màu bàn" id="colorPickerWrap">
             <input type="color" id="colorPicker" />
           </label>
           <button id="btnReset">Reset ván mới</button>
           <button id="btnBack">← Đổi bàn</button>
         </div>
 
-        <div class="board" id="board"></div>
+        <div id="boardsContainer"></div>
       </div>
     </div>
 

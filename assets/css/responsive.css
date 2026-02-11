@@ -1,0 +1,54 @@
+/* Responsive styles */
+
+@media (max-width: 768px) {
+  #boardsContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --gap: 4px;
+  }
+  
+  .wrap {
+    padding: 10px;
+  }
+  
+  .board {
+    padding: 8px;
+  }
+  
+  .cell {
+    border-radius: 7px;
+  }
+  
+  .actions {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+  
+  .actions input {
+    grid-column: 1 / -1;
+  }
+  
+  .mini-preview {
+    width: 160px;
+  }
+  
+  .mini-cell {
+    font-size: 7px;
+  }
+  
+  .board-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  
+  .mode-selection {
+    grid-template-columns: 1fr;
+  }
+  
+  #boardsContainer {
+    max-height: calc(100vh - 180px);
+  }
+}
