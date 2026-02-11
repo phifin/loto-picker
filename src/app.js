@@ -66,19 +66,12 @@ function startGame(boardData) {
   cellMap.clear();
   inputEl.value = "";
 
-  colorPickerEl.value = colorToHex(boardData.color);
+  colorPickerEl.value = boardData.color;
   applyBoardColor(colorPickerEl.value);
 
   renderBoard(boardData.data);
   restoreMarked(boardData.id);
   showGame();
-}
-
-function colorToHex(color) {
-  const ctx = document.createElement("canvas").getContext("2d");
-  ctx.fillStyle = color;
-  const hex = ctx.fillStyle;
-  return hex.startsWith("#") ? hex : "#ec4899";
 }
 
 function applyBoardColor(hex) {
