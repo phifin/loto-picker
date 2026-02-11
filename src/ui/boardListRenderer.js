@@ -63,21 +63,72 @@ export class BoardListRenderer {
       preview.dataset.boardId = b.id;
       this.previewContainer.appendChild(preview);
 
-      // Handle hover to show/hide preview
-      wrap.addEventListener("mouseenter", (e) => {
+      let previewTimeout = null;
+      let isPreviewVisible = false;
+
+      const showPreview = () => {
         const rect = btn.getBoundingClientRect();
         preview.style.left = `${rect.left + rect.width / 2}px`;
         preview.style.top = `${rect.bottom + 6}px`;
         preview.classList.add("visible");
-      });
-      
-      wrap.addEventListener("mouseleave", () => {
+        isPreviewVisible = true;
+      };
+
+      const hidePreview = () => {
         preview.classList.remove("visible");
+        isPreviewVisible = false;
+      };
+
+      // Desktop: hover
+      wrap.addEventListener("mouseenter", showPreview);
+      wrap.addEventListener("mouseleave", hidePreview);
+
+      // Mobile: long press to show, tap again or tap outside to hide
+      let longPressTimer = null;
+      
+      btn.addEventListener("touchstart", (e) => {
+        if (isPreviewVisible) {
+          // If preview is visible, hide it and proceed with normal click
+          hidePreview();
+          return;
+        }
+        
+        // Long press to show preview (prevent default action)
+        longPressTimer = setTimeout(() => {
+          e.preventDefault();
+          showPreview();
+          longPressTimer = null;
+        }, 300);
+      });
+
+      btn.addEventListener("touchend", (e) => {
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          longPressTimer = null;
+        }
+      });
+
+      btn.addEventListener("touchmove", () => {
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          longPressTimer = null;
+        }
       });
 
       wrap.appendChild(btn);
       this.boardListEl.appendChild(wrap);
     });
+
+    // Click outside to hide preview on mobile
+    if ('ontouchstart' in window) {
+      document.addEventListener("touchstart", (e) => {
+        if (!e.target.closest('.board-btn-wrap') && !e.target.closest('.mini-preview')) {
+          document.querySelectorAll('.mini-preview.visible').forEach(p => {
+            p.classList.remove('visible');
+          });
+        }
+      });
+    }
   }
 
   buildMiniPreview(board) {

@@ -17,6 +17,7 @@
     <div class="wrap">
       <!-- Theme Toggle Button -->
       <button class="theme-toggle" id="themeToggle" title="Chuyển đổi theme">
+        fix
         <span class="icon sun-icon active">☀️</span>
         <span class="icon moon-icon">🌙</span>
       </button>
@@ -44,8 +45,13 @@
         <h2 id="selectTitle">🎯 Chọn bàn Loto</h2>
         <div id="multiSelectInfo" class="hidden multi-select-info">
           <div class="selected-boards-container">
-            <span class="selected-label">Đã chọn: <strong id="selectedCount">0</strong> bàn <span class="hint">(tối thiểu 2 bàn)</span></span>
-            <button id="btnStartMulti" class="btn-start-multi" disabled>Bắt đầu chơi</button>
+            <span class="selected-label"
+              >Đã chọn: <strong id="selectedCount">0</strong> bàn
+              <span class="hint">(tối thiểu 2 bàn)</span></span
+            >
+            <button id="btnStartMulti" class="btn-start-multi" disabled>
+              Bắt đầu chơi
+            </button>
           </div>
         </div>
         <div class="board-list" id="boardList"></div>
@@ -55,7 +61,11 @@
       <div id="gameScreen" class="hidden">
         <div class="actions">
           <input id="numberInput" type="number" placeholder="Nhập số → Enter" />
-          <label class="color-picker-wrap" title="Đổi màu bàn" id="colorPickerWrap">
+          <label
+            class="color-picker-wrap"
+            title="Đổi màu bàn"
+            id="colorPickerWrap"
+          >
             <input type="color" id="colorPicker" />
           </label>
           <button id="btnReset">Reset ván mới</button>

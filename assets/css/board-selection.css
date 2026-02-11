@@ -43,6 +43,18 @@
   transform: scale(0.97);
 }
 
+/* Touch feedback for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .board-btn {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  
+  .board-btn:active {
+    transform: scale(0.95);
+  }
+}
+
 .resume-badge {
   font-size: 10px;
   font-weight: 700;

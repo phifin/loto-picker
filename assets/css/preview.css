@@ -10,6 +10,13 @@
   z-index: 9999;
 }
 
+/* Allow interaction with preview on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .mini-preview.visible {
+    pointer-events: auto;
+  }
+}
+
 .mini-preview {
   position: fixed;
   transform: translate(-50%, -6px) scale(0.96);
