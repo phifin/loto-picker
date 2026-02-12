@@ -79,20 +79,12 @@ export class BoardRenderer {
     
     // Initialize Swiper on mobile
     if (isMobile && swiperContainer) {
-      // Add pagination
+      // Add pagination only
       const pagination = document.createElement("div");
       pagination.className = "swiper-pagination";
       swiperContainer.appendChild(pagination);
       
-      // Add navigation
-      const nextBtn = document.createElement("div");
-      nextBtn.className = "swiper-button-next";
-      const prevBtn = document.createElement("div");
-      prevBtn.className = "swiper-button-prev";
-      swiperContainer.appendChild(nextBtn);
-      swiperContainer.appendChild(prevBtn);
-      
-      // Initialize Swiper
+      // Initialize Swiper without navigation
       new Swiper(swiperContainer, {
         direction: 'horizontal',
         loop: false,
@@ -100,10 +92,6 @@ export class BoardRenderer {
         pagination: {
           el: '.swiper-pagination',
           clickable: true,
-        },
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
         },
         slidesPerView: 1,
         centeredSlides: true,

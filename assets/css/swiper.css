@@ -34,30 +34,10 @@
     opacity: 1;
   }
 
-  /* Navigation arrows cho mobile */
+  /* Ẩn navigation arrows trên mobile */
   .swiper-multiboard .swiper-button-next,
   .swiper-multiboard .swiper-button-prev {
-    width: 30px;
-    height: 30px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .swiper-multiboard .swiper-button-next::after,
-  .swiper-multiboard .swiper-button-prev::after {
-    font-size: 14px;
-    color: var(--text);
-  }
-
-  .swiper-multiboard .swiper-button-next {
-    right: 5px;
-  }
-
-  .swiper-multiboard .swiper-button-prev {
-    left: 5px;
+    display: none !important;
   }
 }
 
