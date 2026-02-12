@@ -1,12 +1,12 @@
-import { LOTO_DATA } from "./boards.js";
-import { GameState } from "./gameState.js";
+import { LOTO_DATA } from "./data/boards.js";
+import { GameState } from "./core/gameState.js";
 import { UIManager } from "./ui/uiManager.js";
-import { GameLogic } from "./gameLogic.js";
-import { MultiBoardManager } from "./multiBoard.js";
-import { ThemeManager, watchSystemTheme } from "./themeManager.js";
-import { initInstallPrompt } from "./installPrompt.js";
-import { loadColor, loadMarked } from "./storage.js";
-import { setupEventHandlers, createCellClickHandler, createMultiCellClickHandler } from "./eventHandlers.js";
+import { GameLogic } from "./core/gameLogic.js";
+import { MultiBoardManager } from "./core/multiBoard.js";
+import { ThemeManager, watchSystemTheme } from "./services/themeManager.js";
+import { initInstallPrompt } from "./services/installPrompt.js";
+import { loadColor, loadMarked } from "./services/storage.js";
+import { setupEventHandlers, createCellClickHandler, createMultiCellClickHandler } from "./events/eventHandlers.js";
 
 // DOM elements
 const elements = {

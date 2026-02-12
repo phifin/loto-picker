@@ -1,6 +1,6 @@
 // Game board rendering (single and multi-board)
 
-import { loadColor, saveColor } from "../storage.js";
+import { loadColor, saveColor } from "../services/storage.js";
 
 export class BoardRenderer {
   constructor(boardsContainer, colorPickerEl) {

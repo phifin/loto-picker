@@ -1,6 +1,6 @@
 // Service Worker for Loto Tân Tân PWA
 
-const CACHE_NAME = 'loto-tan-tan-v1';
+const CACHE_NAME = 'loto-tan-tan-v2';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -20,13 +20,14 @@ const PRECACHE_ASSETS = [
   './assets/icon-192.png',
   './assets/icon-512.png',
   './src/app.js',
-  './src/boards.js',
-  './src/storage.js',
-  './src/gameState.js',
-  './src/multiBoard.js',
-  './src/gameLogic.js',
-  './src/themeManager.js',
-  './src/eventHandlers.js',
+  './src/core/gameState.js',
+  './src/core/gameLogic.js',
+  './src/data/boards.js',
+  './src/core/multiBoard.js',
+  './src/services/storage.js',
+  './src/services/themeManager.js',
+  './src/services/installPrompt.js',
+  './src/events/eventHandlers.js',
   './src/ui/uiManager.js',
   './src/ui/screenManager.js',
   './src/ui/boardListRenderer.js',

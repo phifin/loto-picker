@@ -1,5 +1,5 @@
 // Game logic and rules
-import { loadMarked } from "./storage.js";
+import { loadMarked } from "../services/storage.js";
 
 export class GameLogic {
   constructor(uiManager) {

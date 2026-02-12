@@ -1,5 +1,5 @@
 // Event handlers setup
-import { saveMarked, clearMarked } from "./storage.js";
+import { saveMarked, clearMarked } from "../services/storage.js";
 
 export function setupEventHandlers(elements, gameState, uiManager, gameLogic, boards, startSingleGame, multiBoardMgr, startMultiGame, applyActionButtonsColor) {
   const { inputEl, btnReset, btnBack, colorPickerEl } = elements;

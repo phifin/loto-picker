@@ -1,6 +1,6 @@
 // Board list and preview rendering
 
-import { loadMarked, loadColor } from "../storage.js";
+import { loadMarked, loadColor } from "../services/storage.js";
 
 export class BoardListRenderer {
   constructor(boardListEl) {
