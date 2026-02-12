@@ -24,18 +24,35 @@
   }
   
   .actions {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr 1fr;
     grid-template-rows: auto auto;
-    gap: 6px;
-  }
-  
-  .actions input {
-    grid-column: 1 / -1;
-    max-width: 100%;
+    gap: 8px;
   }
   
   .actions .theme-toggle-inline {
-    order: -1;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  
+  .actions input {
+    grid-column: 2 / -1;
+    grid-row: 1;
+    min-width: 0;
+  }
+  
+  .actions .color-picker-wrap {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  
+  .actions #btnReset {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  
+  .actions #btnBack {
+    grid-column: 3;
+    grid-row: 2;
   }
   
   .mini-preview {
