@@ -82,82 +82,77 @@ export class BoardListRenderer {
         isPreviewVisible = false;
       };
 
-      // Click handler: skip if it was long press or tap-to-dismiss
+      // Click handler: only for desktop
       btn.onclick = (e) => {
-        if (skipNextClick) {
+        // On touch devices, handle everything through touch events
+        if ('ontouchstart' in window) {
           e.preventDefault();
-          e.stopPropagation();
-          skipNextClick = false;
           return;
         }
+        console.log(`Desktop click on board ${b.id}`);
         onBoardSelect(b);
       };
 
       // Desktop: hover
-      wrap.addEventListener("mouseenter", showPreview);
-      wrap.addEventListener("mouseleave", hidePreview);
+      if (!('ontouchstart' in window)) {
+        wrap.addEventListener("mouseenter", showPreview);
+        wrap.addEventListener("mouseleave", hidePreview);
+      }
 
-      // Mobile: improved touch handling
-      let longPressTimer = null;
+      // Mobile: use pointer events for better control
+      if ('ontouchstart' in window) {
+        let longPressTimer = null;
+        let isLongPress = false;
 
-      btn.addEventListener("touchstart", (e) => {
-        touchStartTime = Date.now();
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        hasMoved = false;
-        
-        if (isPreviewVisible) {
-          // Tap to dismiss - hide preview, skip the follow-up click
-          hidePreview();
-          skipNextClick = true;
-          return;
-        }
-
-        longPressTimer = setTimeout(() => {
-          if (!hasMoved) {
-            showPreview();
-            skipNextClick = true; // Prevent click when user releases
+        btn.addEventListener("pointerdown", (e) => {
+          console.log(`Pointerdown on board ${b.id}, isPreviewVisible: ${isPreviewVisible}`);
+          isLongPress = false;
+          
+          if (isPreviewVisible) {
+            console.log("Tapping to dismiss preview");
+            hidePreview();
+            return;
           }
-          longPressTimer = null;
-        }, 500); // Increased to 500ms for better distinction
-      });
 
-      btn.addEventListener("touchmove", (e) => {
-        const touch = e.touches[0];
-        const moveX = Math.abs(touch.clientX - touchStartX);
-        const moveY = Math.abs(touch.clientY - touchStartY);
-        
-        // If moved more than 10px, consider it as a scroll/drag, not a press
-        if (moveX > 10 || moveY > 10) {
-          hasMoved = true;
+          longPressTimer = setTimeout(() => {
+            console.log("Long press triggered, showing preview");
+            showPreview();
+            isLongPress = true;
+          }, 500);
+        });
+
+        btn.addEventListener("pointerup", (e) => {
+          console.log(`Pointerup on board ${b.id}, isLongPress: ${isLongPress}`);
+          
           if (longPressTimer) {
             clearTimeout(longPressTimer);
             longPressTimer = null;
           }
-        }
-      });
 
-      btn.addEventListener("touchend", (e) => {
-        const touchDuration = Date.now() - touchStartTime;
-        
-        if (longPressTimer) {
-          clearTimeout(longPressTimer);
-          longPressTimer = null;
-        }
-        
-        // If it was a quick tap (less than 200ms) and no movement, allow click
-        if (touchDuration < 200 && !hasMoved && !isPreviewVisible) {
-          skipNextClick = false;
-        }
-      });
+          // Only select board if it wasn't a long press
+          if (!isLongPress && !isPreviewVisible) {
+            console.log(`Quick tap detected, selecting board ${b.id}`);
+            onBoardSelect(b);
+          }
+        });
 
-      btn.addEventListener("touchcancel", () => {
-        if (longPressTimer) {
-          clearTimeout(longPressTimer);
-          longPressTimer = null;
-        }
-        hasMoved = true;
-      });
+        btn.addEventListener("pointercancel", () => {
+          console.log("Pointercancel");
+          if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+          }
+          isLongPress = false;
+        });
+
+        btn.addEventListener("pointerleave", () => {
+          if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+          }
+          isLongPress = false;
+        });
+      }
 
       wrap.appendChild(btn);
       this.boardListEl.appendChild(wrap);
