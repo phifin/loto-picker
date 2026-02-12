@@ -4,6 +4,7 @@ import { UIManager } from "./ui/uiManager.js";
 import { GameLogic } from "./gameLogic.js";
 import { MultiBoardManager } from "./multiBoard.js";
 import { ThemeManager, watchSystemTheme } from "./themeManager.js";
+import { initInstallPrompt } from "./installPrompt.js";
 import { loadColor, loadMarked } from "./storage.js";
 import { setupEventHandlers, createCellClickHandler, createMultiCellClickHandler } from "./eventHandlers.js";
 
@@ -47,6 +48,9 @@ const themeManager = new ThemeManager();
 // Initialize theme with game toggle button
 themeManager.init(elements.themeToggleGame);
 watchSystemTheme(themeManager);
+
+// Initialize PWA install prompt
+initInstallPrompt();
 
 // Mode selection handlers
 elements.btnSingleMode.onclick = () => {

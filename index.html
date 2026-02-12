@@ -3,8 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Loto" />
     <title>Loto Tân Tân</title>
 
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="apple-touch-icon" href="./assets/icon-192.png" />
     <link
       rel="icon"
       type="image/svg+xml"
@@ -14,6 +20,20 @@
     <link rel="stylesheet" href="./assets/styles.css" />
   </head>
   <body>
+    <!-- Install Prompt Banner -->
+    <div id="installBanner" class="install-banner hidden">
+      <div class="install-banner-content">
+        <p class="install-banner-text">📱 Thêm vào màn hình chính để chơi tiện hơn!</p>
+        <div id="installIosHint" class="install-ios-hint hidden">
+          Chạm <strong>Share</strong> (□↑) → <strong>Thêm vào Màn hình chính</strong>
+        </div>
+        <div class="install-banner-actions">
+          <button type="button" id="btnInstall" class="install-btn install-btn-primary">Thêm</button>
+          <button type="button" id="btnDismiss" class="install-btn install-btn-secondary">Để sau</button>
+        </div>
+      </div>
+    </div>
+
     <div class="wrap">
       <!-- Mode Selection Screen -->
       <div id="modeScreen">
@@ -77,5 +97,13 @@
     </div>
 
     <script type="module" src="./src/app.js"></script>
+    <script>
+      // Register Service Worker for PWA
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

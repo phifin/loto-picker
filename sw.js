@@ -1,0 +1,80 @@
+// Service Worker for Loto Tân Tân PWA
+
+const CACHE_NAME = 'loto-tan-tan-v1';
+
+// Assets to cache on install
+const PRECACHE_ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './assets/styles.css',
+  './assets/css/base.css',
+  './assets/css/themes.css',
+  './assets/css/theme-toggle.css',
+  './assets/css/mode-selection.css',
+  './assets/css/board-selection.css',
+  './assets/css/preview.css',
+  './assets/css/game-controls.css',
+  './assets/css/board.css',
+  './assets/css/responsive.css',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './src/app.js',
+  './src/boards.js',
+  './src/storage.js',
+  './src/gameState.js',
+  './src/multiBoard.js',
+  './src/gameLogic.js',
+  './src/themeManager.js',
+  './src/eventHandlers.js',
+  './src/ui/uiManager.js',
+  './src/ui/screenManager.js',
+  './src/ui/boardListRenderer.js',
+  './src/ui/boardRenderer.js'
+];
+
+// Install event - precache assets
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
+        console.warn('Precache failed for some assets:', err);
+      });
+    }).then(() => self.skipWaiting())
+  );
+});
+
+// Activate event - clean old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
+// Fetch event - network first, fallback to cache
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        // Clone and cache successful responses
+        if (response.ok && event.request.method === 'GET') {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cached) => {
+          return cached || caches.match('./index.html');
+        });
+      })
+  );
+});
