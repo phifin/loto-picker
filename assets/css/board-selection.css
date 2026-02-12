@@ -40,11 +40,17 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .board-btn {
   position: relative;
   padding: 13px 8px 10px;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
   border-radius: 10px;
   border: 0;
   font-weight: 800;
