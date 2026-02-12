@@ -75,7 +75,9 @@ button {
   box-shadow: 0 6px 14px rgba(239, 68, 68, 0.22);
   transition:
     transform 0.12s ease,
-    filter 0.12s ease;
+    filter 0.12s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 button:hover {
@@ -85,4 +87,10 @@ button:hover {
 
 button:active {
   transform: scale(0.98);
+}
+
+/* Action buttons (Reset, Đổi bàn) - use color from color picker */
+.actions .action-btn {
+  background: linear-gradient(135deg, var(--action-btn-color, var(--danger)) 0%, color-mix(in srgb, var(--action-btn-color, var(--danger)) 80%, black) 100%);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--action-btn-color, var(--danger)) 35%, transparent);
 }

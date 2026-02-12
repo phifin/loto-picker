@@ -1,7 +1,7 @@
 // Event handlers setup
 import { saveMarked, clearMarked } from "./storage.js";
 
-export function setupEventHandlers(elements, gameState, uiManager, gameLogic, boards, startSingleGame, multiBoardMgr, startMultiGame) {
+export function setupEventHandlers(elements, gameState, uiManager, gameLogic, boards, startSingleGame, multiBoardMgr, startMultiGame, applyActionButtonsColor) {
   const { inputEl, btnReset, btnBack, colorPickerEl } = elements;
 
   // Number input handler
@@ -40,8 +40,10 @@ export function setupEventHandlers(elements, gameState, uiManager, gameLogic, bo
 
   // Color picker handler (not used in multi-mode)
   colorPickerEl.addEventListener("input", (e) => {
+    const hex = e.target.value;
     const board = gameState.getCurrentBoard();
-    uiManager.applyBoardColor(e.target.value, board?.id);
+    uiManager.applyBoardColor(hex, board?.id);
+    applyActionButtonsColor?.(hex);
   });
 
   // Reset button handler
@@ -90,7 +92,7 @@ export function setupEventHandlers(elements, gameState, uiManager, gameLogic, bo
     } else {
       // Single mode: go back to board selection
       uiManager.showSelect(false);
-      uiManager.renderBoardList(boards, startGame);
+      uiManager.renderBoardList(boards, startSingleGame);
     }
   };
 }

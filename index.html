@@ -36,7 +36,7 @@
       <!-- Board Selection Screen -->
       <div id="selectScreen" class="hidden">
         <div class="select-screen-header">
-          <button class="btn-back-mode" id="btnBackToMode" title="Quay lại chọn mode">← Chọn mode</button>
+          <button type="button" class="btn-back-mode" id="btnBackToMode" title="Quay lại chọn mode">← Chọn mode</button>
           <h2 id="selectTitle">🎯 Chọn bàn Loto</h2>
         </div>
         <div id="multiSelectInfo" class="hidden multi-select-info">
@@ -55,7 +55,7 @@
 
       <!-- Game Screen -->
       <div id="gameScreen" class="hidden">
-        <div class="actions">
+        <div class="actions" id="actionsBar">
           <button class="theme-toggle theme-toggle-inline" id="themeToggleGame" title="Chuyển đổi theme" aria-label="Chuyển đổi theme">
             <span class="icon sun-icon active">☀️</span>
             <span class="icon moon-icon">🌙</span>
@@ -68,8 +68,8 @@
           >
             <input type="color" id="colorPicker" />
           </label>
-          <button id="btnReset">Reset ván mới</button>
-          <button id="btnBack">← Đổi bàn</button>
+          <button class="action-btn" id="btnReset">Reset ván mới</button>
+          <button class="action-btn" id="btnBack">← Đổi bàn</button>
         </div>
 
         <div id="boardsContainer"></div>

@@ -27,7 +27,15 @@ const elements = {
   selectTitle: document.getElementById("selectTitle"),
   themeToggleGame: document.getElementById("themeToggleGame"),
   btnBackToMode: document.getElementById("btnBackToMode"),
+  actionsBar: document.getElementById("actionsBar"),
 };
+
+// Apply color picker color to Reset and Đổi bàn buttons
+function applyActionButtonsColor(hex) {
+  if (elements.actionsBar) {
+    elements.actionsBar.style.setProperty("--action-btn-color", hex);
+  }
+}
 
 // Initialize game components
 const gameState = new GameState();
@@ -91,6 +99,7 @@ function startSingleGame(boardData) {
   elements.colorPickerWrap.style.display = "flex";
   const color = loadColor(boardData.id, boardData.color);
   elements.colorPickerEl.value = color;
+  applyActionButtonsColor(color);
 
   // Render single board
   const boardWrapper = document.createElement("div");
@@ -138,7 +147,10 @@ function startMultiGame(boards) {
   
   // Hide color picker in multi mode
   elements.colorPickerWrap.style.display = "none";
-  
+  // Use first board's color for action buttons
+  const firstColor = loadColor(boards[0].id, boards[0].color);
+  applyActionButtonsColor(firstColor);
+
   // Create multi-cell click handler
   const multiCellClickHandler = createMultiCellClickHandler(multiBoardMgr, gameLogic, uiManager, boards);
   
@@ -166,7 +178,7 @@ function startMultiGame(boards) {
 }
 
 // Setup event handlers with board data and game functions
-setupEventHandlers(elements, gameState, uiManager, gameLogic, LOTO_DATA, startSingleGame, multiBoardMgr, startMultiGame);
+setupEventHandlers(elements, gameState, uiManager, gameLogic, LOTO_DATA, startSingleGame, multiBoardMgr, startMultiGame, applyActionButtonsColor);
 
 // Initial render
 function init() {
