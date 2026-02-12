@@ -34,10 +34,15 @@
     grid-row: 1;
   }
   
-  .actions input {
+  .actions #numberInput {
     grid-column: 2 / -1;
     grid-row: 1;
     min-width: 0;
+  }
+  
+  .virtual-numpad .numpad-key {
+    min-height: 44px;
+    font-size: 16px;
   }
   
   .actions .color-picker-wrap {

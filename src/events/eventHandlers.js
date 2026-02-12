@@ -1,41 +1,43 @@
 // Event handlers setup
 import { saveMarked, clearMarked } from "../services/storage.js";
+import { initVirtualNumpad } from "../ui/virtualNumpad.js";
 
 export function setupEventHandlers(elements, gameState, uiManager, gameLogic, boards, startSingleGame, multiBoardMgr, startMultiGame, applyActionButtonsColor) {
   const { inputEl, btnReset, btnBack, colorPickerEl } = elements;
 
-  // Number input handler
-  inputEl.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter") return;
-    
-    const value = Number(e.target.value);
-    e.target.value = "";
-    
+  // Submit số từ input (dùng cho cả keydown Enter và bàn phím ảo)
+  function submitNumberInput(value) {
     if (multiBoardMgr.isMulti()) {
-      // Multi-board mode: mark number on all boards
       const selectedBoards = multiBoardMgr.getSelectedBoards();
       selectedBoards.forEach(board => {
         const boardState = multiBoardMgr.getBoardState(board.id);
         if (!boardState || !boardState.cellMap.has(value)) return;
-        
         const { el, row } = boardState.cellMap.get(value);
-        if (el.classList.contains("marked")) return; // Already marked
-        
+        if (el.classList.contains("marked")) return;
         el.classList.add("marked");
         uiManager.flashCell(el);
         gameLogic.checkRowMulti(board.id, row, multiBoardMgr, uiManager);
         saveMarked(board.id, boardState.cellMap);
       });
     } else {
-      // Single board mode
       const board = gameState.getCurrentBoard();
       if (!board) return;
-      
       gameLogic.markNumber(value, gameState, () => {
         saveMarked(board.id, gameState.cellMap);
         uiManager.updateRowCounter(gameState);
       });
     }
+  }
+
+  // Bàn phím ảo (tránh bàn phím mặc định gây zoom trên mobile)
+  initVirtualNumpad(inputEl, submitNumberInput);
+
+  // Enter từ bàn phím vật lý (desktop)
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const value = Number(e.target.value);
+    e.target.value = "";
+    submitNumberInput(value);
   });
 
   // Color picker handler (not used in multi-mode)

@@ -45,7 +45,7 @@
   box-shadow: none;
 }
 
-input[type="number"] {
+#numberInput {
   flex: 1;
   min-width: 0;
   padding: 9px 12px;
@@ -58,7 +58,7 @@ input[type="number"] {
   outline: none;
 }
 
-input[type="number"]:focus {
+#numberInput:focus {
   border-color: rgba(59, 130, 246, 0.45);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }

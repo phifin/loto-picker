@@ -17,6 +17,7 @@ const PRECACHE_ASSETS = [
   './assets/css/board-selection.css',
   './assets/css/preview.css',
   './assets/css/game-controls.css',
+  './assets/css/numpad.css',
   './assets/css/board.css',
   './assets/css/responsive.css',
   './assets/icon-192.png',
@@ -33,7 +34,8 @@ const PRECACHE_ASSETS = [
   './src/ui/uiManager.js',
   './src/ui/screenManager.js',
   './src/ui/boardListRenderer.js',
-  './src/ui/boardRenderer.js'
+  './src/ui/boardRenderer.js',
+  './src/ui/virtualNumpad.js'
 ];
 
 // Install event - precache assets

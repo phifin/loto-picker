@@ -80,7 +80,7 @@
             <span class="icon sun-icon active">☀️</span>
             <span class="icon moon-icon">🌙</span>
           </button>
-          <input id="numberInput" type="number" placeholder="Nhập số → Enter" />
+          <input id="numberInput" type="text" inputmode="none" readonly autocomplete="off" placeholder="Nhập số → Enter" aria-label="Nhập số" />
           <label
             class="color-picker-wrap"
             title="Đổi màu bàn"
@@ -93,6 +93,28 @@
         </div>
 
         <div id="boardsContainer"></div>
+        <div id="virtualNumpad" class="virtual-numpad" aria-hidden="true">
+          <div class="numpad-row">
+            <button type="button" class="numpad-key" data-key="1">1</button>
+            <button type="button" class="numpad-key" data-key="2">2</button>
+            <button type="button" class="numpad-key" data-key="3">3</button>
+          </div>
+          <div class="numpad-row">
+            <button type="button" class="numpad-key" data-key="4">4</button>
+            <button type="button" class="numpad-key" data-key="5">5</button>
+            <button type="button" class="numpad-key" data-key="6">6</button>
+          </div>
+          <div class="numpad-row">
+            <button type="button" class="numpad-key" data-key="7">7</button>
+            <button type="button" class="numpad-key" data-key="8">8</button>
+            <button type="button" class="numpad-key" data-key="9">9</button>
+          </div>
+          <div class="numpad-row">
+            <button type="button" class="numpad-key numpad-key--backspace" data-key="backspace" aria-label="Xóa">⌫</button>
+            <button type="button" class="numpad-key" data-key="0">0</button>
+            <button type="button" class="numpad-key numpad-key--enter" data-key="enter" aria-label="Đánh dấu">✓</button>
+          </div>
+        </div>
       </div>
     </div>
 
