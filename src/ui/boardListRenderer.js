@@ -64,6 +64,10 @@ export class BoardListRenderer {
 
       let isPreviewVisible = false;
       let skipNextClick = false; // Prevent click after long press or tap-to-dismiss
+      let touchStartTime = 0;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let hasMoved = false;
 
       const showPreview = () => {
         const rect = btn.getBoundingClientRect();
@@ -93,10 +97,15 @@ export class BoardListRenderer {
       wrap.addEventListener("mouseenter", showPreview);
       wrap.addEventListener("mouseleave", hidePreview);
 
-      // Mobile: long press to show preview, release to just hide (no click)
+      // Mobile: improved touch handling
       let longPressTimer = null;
 
       btn.addEventListener("touchstart", (e) => {
+        touchStartTime = Date.now();
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        hasMoved = false;
+        
         if (isPreviewVisible) {
           // Tap to dismiss - hide preview, skip the follow-up click
           hidePreview();
@@ -105,24 +114,49 @@ export class BoardListRenderer {
         }
 
         longPressTimer = setTimeout(() => {
-          showPreview();
-          skipNextClick = true; // Prevent click when user releases
+          if (!hasMoved) {
+            showPreview();
+            skipNextClick = true; // Prevent click when user releases
+          }
           longPressTimer = null;
-        }, 300);
+        }, 500); // Increased to 500ms for better distinction
       });
 
-      btn.addEventListener("touchend", () => {
+      btn.addEventListener("touchmove", (e) => {
+        const touch = e.touches[0];
+        const moveX = Math.abs(touch.clientX - touchStartX);
+        const moveY = Math.abs(touch.clientY - touchStartY);
+        
+        // If moved more than 10px, consider it as a scroll/drag, not a press
+        if (moveX > 10 || moveY > 10) {
+          hasMoved = true;
+          if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+          }
+        }
+      });
+
+      btn.addEventListener("touchend", (e) => {
+        const touchDuration = Date.now() - touchStartTime;
+        
         if (longPressTimer) {
           clearTimeout(longPressTimer);
           longPressTimer = null;
         }
+        
+        // If it was a quick tap (less than 200ms) and no movement, allow click
+        if (touchDuration < 200 && !hasMoved && !isPreviewVisible) {
+          skipNextClick = false;
+        }
       });
 
-      btn.addEventListener("touchmove", () => {
+      btn.addEventListener("touchcancel", () => {
         if (longPressTimer) {
           clearTimeout(longPressTimer);
           longPressTimer = null;
         }
+        hasMoved = true;
       });
 
       wrap.appendChild(btn);
