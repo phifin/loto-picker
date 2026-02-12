@@ -4,28 +4,31 @@
  */
 
 export function initVirtualNumpad(inputEl, onSubmit) {
-  // Chỉ khởi tạo numpad trên mobile và tablet
-  if (window.innerWidth >= 1024) {
-    // Desktop: cho phép input bình thường
-    inputEl.removeAttribute("readonly");
-    inputEl.setAttribute("type", "number");
-    inputEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const value = Number(inputEl.value);
-        inputEl.value = "";
-        onSubmit(value);
-      }
-    });
-    return;
-  }
-
   const numpad = document.getElementById("virtualNumpad");
   if (!numpad || !inputEl) return;
 
+  const isCoarsePointer =
+    (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ||
+    (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0) ||
+    "ontouchstart" in window;
+
+  // Desktop: ẩn bàn phím ảo, cho phép gõ bình thường
+  if (!isCoarsePointer) {
+    numpad.classList.add("hidden");
+    numpad.setAttribute("aria-hidden", "true");
+    inputEl.readOnly = false;
+    inputEl.setAttribute("inputmode", "numeric");
+    return;
+  }
+
+  // Mobile/Tablet: hiện bàn phím ảo + chặn bàn phím mặc định
+  numpad.classList.remove("hidden");
+  numpad.setAttribute("aria-hidden", "false");
+  inputEl.readOnly = true;
+  inputEl.setAttribute("inputmode", "none");
+
   // Chặn focus mở bàn phím trên mobile (readonly vẫn có thể trigger trên một số thiết bị)
-  inputEl.addEventListener("focus", () => {
-    if ("ontouchstart" in window) inputEl.blur();
-  });
+  inputEl.addEventListener("focus", () => inputEl.blur());
 
   numpad.addEventListener("click", (e) => {
     const key = e.target.closest(".numpad-key")?.dataset?.key;

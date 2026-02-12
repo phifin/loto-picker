@@ -37,7 +37,7 @@
     <div class="wrap">
       <!-- Mode Selection Screen -->
       <div id="modeScreen">
-        <h2>🎯 Loto Tân Tân by Fly Vo</h2>
+        <h2>🎯 Loto Tân Tân</h2>
         <p class="mode-subtitle">Chọn cách chơi của bạn</p>
         <div class="mode-selection">
           <button class="mode-btn" id="btnSingleMode">
@@ -80,7 +80,15 @@
             <span class="icon sun-icon active">☀️</span>
             <span class="icon moon-icon">🌙</span>
           </button>
-          <input id="numberInput" type="text" inputmode="none" readonly autocomplete="off" placeholder="Nhập số → Enter" aria-label="Nhập số" pattern="[0-9]{1,2}" maxlength="2" />
+          <input
+            id="numberInput"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength="2"
+            placeholder="Nhập số → Enter"
+            aria-label="Nhập số"
+          />
           <label
             class="color-picker-wrap"
             title="Đổi màu bàn"
@@ -93,7 +101,7 @@
         </div>
 
         <div id="boardsContainer"></div>
-        <div id="virtualNumpad" class="virtual-numpad" aria-hidden="true">
+        <div id="virtualNumpad" class="virtual-numpad hidden" aria-hidden="true">
           <div class="numpad-row">
             <button type="button" class="numpad-key" data-key="1">1</button>
             <button type="button" class="numpad-key" data-key="2">2</button>
