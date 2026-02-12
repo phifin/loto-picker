@@ -56,15 +56,14 @@ export class BoardListRenderer {
       const label = document.createElement("span");
       label.textContent = `Bàn ${b.id}`;
       btn.appendChild(label);
-      btn.onclick = () => onBoardSelect(b);
 
       // Create preview and add to container
       const preview = this.buildMiniPreview(b);
       preview.dataset.boardId = b.id;
       this.previewContainer.appendChild(preview);
 
-      let previewTimeout = null;
       let isPreviewVisible = false;
+      let skipNextClick = false; // Prevent click after long press or tap-to-dismiss
 
       const showPreview = () => {
         const rect = btn.getBoundingClientRect();
@@ -79,29 +78,40 @@ export class BoardListRenderer {
         isPreviewVisible = false;
       };
 
+      // Click handler: skip if it was long press or tap-to-dismiss
+      btn.onclick = (e) => {
+        if (skipNextClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          skipNextClick = false;
+          return;
+        }
+        onBoardSelect(b);
+      };
+
       // Desktop: hover
       wrap.addEventListener("mouseenter", showPreview);
       wrap.addEventListener("mouseleave", hidePreview);
 
-      // Mobile: long press to show, tap again or tap outside to hide
+      // Mobile: long press to show preview, release to just hide (no click)
       let longPressTimer = null;
-      
+
       btn.addEventListener("touchstart", (e) => {
         if (isPreviewVisible) {
-          // If preview is visible, hide it and proceed with normal click
+          // Tap to dismiss - hide preview, skip the follow-up click
           hidePreview();
+          skipNextClick = true;
           return;
         }
-        
-        // Long press to show preview (prevent default action)
+
         longPressTimer = setTimeout(() => {
-          e.preventDefault();
           showPreview();
+          skipNextClick = true; // Prevent click when user releases
           longPressTimer = null;
         }, 300);
       });
 
-      btn.addEventListener("touchend", (e) => {
+      btn.addEventListener("touchend", () => {
         if (longPressTimer) {
           clearTimeout(longPressTimer);
           longPressTimer = null;
