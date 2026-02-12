@@ -4,6 +4,21 @@
  */
 
 export function initVirtualNumpad(inputEl, onSubmit) {
+  // Chỉ khởi tạo numpad trên mobile và tablet
+  if (window.innerWidth >= 1024) {
+    // Desktop: cho phép input bình thường
+    inputEl.removeAttribute("readonly");
+    inputEl.setAttribute("type", "number");
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const value = Number(inputEl.value);
+        inputEl.value = "";
+        onSubmit(value);
+      }
+    });
+    return;
+  }
+
   const numpad = document.getElementById("virtualNumpad");
   if (!numpad || !inputEl) return;
 
