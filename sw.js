@@ -1,8 +1,10 @@
 // Service Worker for Loto Tân Tân PWA
+//
+// __CACHE_VERSION__ được thay bằng commit SHA khi deploy (GitHub Actions).
 
-const CACHE_NAME = 'loto-tan-tan-v2';
+const CACHE_NAME = 'loto-tan-tan-__CACHE_VERSION__';
 
-// Assets to cache on install
+// Precache shell + toàn bộ JS để app chạy offline ngay từ lần mở đầu
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -22,8 +24,8 @@ const PRECACHE_ASSETS = [
   './src/app.js',
   './src/core/gameState.js',
   './src/core/gameLogic.js',
-  './src/data/boards.js',
   './src/core/multiBoard.js',
+  './src/data/boards.js',
   './src/services/storage.js',
   './src/services/themeManager.js',
   './src/services/installPrompt.js',

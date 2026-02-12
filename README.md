@@ -34,6 +34,14 @@ A modern, responsive web application for playing Vietnamese Loto (Bingo) with su
 - Independent row completion tracking per board
 - Simultaneous reset for all boards
 
+## 🌐 Live (GitHub Pages)
+
+Bật Pages (Settings → Pages → Source: **GitHub Actions**) rồi push lên `main`. GitHub tự render domain:
+
+**https://\<username\>.github.io/\<repo-name\>/**
+
+Ví dụ repo `vonhuphi/loto-picker` → `https://vonhuphi.github.io/loto-picker/`
+
 ## 🚀 Quick Start
 
 ### Installation

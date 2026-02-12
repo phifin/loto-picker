@@ -1,0 +1,44 @@
+# Deploy static site lên GitHub Pages. GitHub tự cho domain:
+#   https://<username>.github.io/<repo-name>/
+# Mỗi lần chạy sẽ thay __CACHE_VERSION__ trong sw.js bằng commit SHA → cache PWA mới.
+#
+# Lần đầu: Repo → Settings → Pages → Source chọn "GitHub Actions".
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject cache version into sw.js
+        run: |
+          VERSION=$(echo "$GITHUB_SHA" | cut -c1-7)
+          sed -i "s/__CACHE_VERSION__/$VERSION/g" sw.js
+          echo "Cache version set to: $VERSION"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
