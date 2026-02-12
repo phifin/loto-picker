@@ -11,10 +11,31 @@ export class BoardRenderer {
   renderMultipleBoards(boards, multiBoardMgr, onCellClick) {
     this.boardsContainer.innerHTML = "";
     
+    // Check if mobile and create swiper container
+    const isMobile = window.innerWidth < 768;
+    let swiperContainer = null;
+    let swiperWrapper = null;
+    
+    if (isMobile) {
+      swiperContainer = document.createElement("div");
+      swiperContainer.className = "swiper swiper-multiboard";
+      
+      swiperWrapper = document.createElement("div");
+      swiperWrapper.className = "swiper-wrapper";
+      
+      this.boardsContainer.appendChild(swiperContainer);
+      swiperContainer.appendChild(swiperWrapper);
+    }
+    
     boards.forEach((boardData) => {
       const boardWrapper = document.createElement("div");
       boardWrapper.className = "board-wrapper";
       boardWrapper.dataset.boardId = boardData.id;
+      
+      // Add swiper slide class on mobile
+      if (isMobile) {
+        boardWrapper.classList.add("swiper-slide");
+      }
       
       const boardHeader = document.createElement("div");
       boardHeader.className = "board-header";
@@ -48,8 +69,46 @@ export class BoardRenderer {
       
       boardWrapper.appendChild(boardHeader);
       boardWrapper.appendChild(boardElement);
-      this.boardsContainer.appendChild(boardWrapper);
+      
+      if (isMobile) {
+        swiperWrapper.appendChild(boardWrapper);
+      } else {
+        this.boardsContainer.appendChild(boardWrapper);
+      }
     });
+    
+    // Initialize Swiper on mobile
+    if (isMobile && swiperContainer) {
+      // Add pagination
+      const pagination = document.createElement("div");
+      pagination.className = "swiper-pagination";
+      swiperContainer.appendChild(pagination);
+      
+      // Add navigation
+      const nextBtn = document.createElement("div");
+      nextBtn.className = "swiper-button-next";
+      const prevBtn = document.createElement("div");
+      prevBtn.className = "swiper-button-prev";
+      swiperContainer.appendChild(nextBtn);
+      swiperContainer.appendChild(prevBtn);
+      
+      // Initialize Swiper
+      new Swiper(swiperContainer, {
+        direction: 'horizontal',
+        loop: false,
+        spaceBetween: 10,
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        slidesPerView: 1,
+        centeredSlides: true,
+      });
+    }
   }
 
   applyBoardColor(hex, boardId) {

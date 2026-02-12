@@ -1,0 +1,69 @@
+/* Mobile Swiper for MultiBoard - chỉ hiển thị trên mobile */
+@media (max-width: 767px) {
+  .swiper-multiboard {
+    width: 100%;
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .swiper-multiboard .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .swiper-multiboard .board {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Custom pagination cho mobile */
+  .swiper-multiboard .swiper-pagination {
+    bottom: -5px;
+  }
+
+  .swiper-multiboard .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: var(--muted);
+    opacity: 0.5;
+  }
+
+  .swiper-multiboard .swiper-pagination-bullet-active {
+    background: var(--action-btn-color, #22c55e);
+    opacity: 1;
+  }
+
+  /* Navigation arrows cho mobile */
+  .swiper-multiboard .swiper-button-next,
+  .swiper-multiboard .swiper-button-prev {
+    width: 30px;
+    height: 30px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .swiper-multiboard .swiper-button-next::after,
+  .swiper-multiboard .swiper-button-prev::after {
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .swiper-multiboard .swiper-button-next {
+    right: 5px;
+  }
+
+  .swiper-multiboard .swiper-button-prev {
+    left: 5px;
+  }
+}
+
+/* ẩn swiper trên desktop */
+@media (min-width: 768px) {
+  .swiper-multiboard {
+    display: none !important;
+  }
+}
