@@ -12,6 +12,15 @@ export function initVirtualNumpad(inputEl, onSubmit) {
     (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0) ||
     "ontouchstart" in window;
 
+  // Debug: log device type
+  console.log("Device detection:", {
+    isCoarsePointer,
+    matchMedia: window.matchMedia?.("(pointer: coarse)")?.matches,
+    maxTouchPoints: navigator.maxTouchPoints,
+    hasTouch: "ontouchstart" in window,
+    innerWidth: window.innerWidth
+  });
+
   // Desktop: ẩn bàn phím ảo, cho phép gõ bình thường
   if (!isCoarsePointer) {
     numpad.classList.add("hidden");

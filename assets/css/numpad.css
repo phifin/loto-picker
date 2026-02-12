@@ -1,4 +1,9 @@
-/* Virtual numpad - tránh bàn phím mặc định gây zoom/đẩy UI trên mobile */
+/* Virtual numpad - chỉ hiển thị trên mobile và tablet, ẩn trên desktop */
+@media (min-width: 768px) {
+  .virtual-numpad {
+    display: none !important;
+  }
+}
 
 .virtual-numpad {
   display: grid;

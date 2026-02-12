@@ -23,13 +23,28 @@
     <!-- Install Prompt Banner -->
     <div id="installBanner" class="install-banner hidden">
       <div class="install-banner-content">
-        <p class="install-banner-text">📱 Thêm vào màn hình chính để chơi tiện hơn!</p>
+        <p class="install-banner-text">
+          📱 Thêm vào màn hình chính để chơi tiện hơn!
+        </p>
         <div id="installIosHint" class="install-ios-hint hidden">
-          Chạm <strong>Share</strong> (□↑) → <strong>Thêm vào Màn hình chính</strong>
+          Chạm <strong>Share</strong> (□↑) →
+          <strong>Thêm vào Màn hình chính</strong>
         </div>
         <div class="install-banner-actions">
-          <button type="button" id="btnInstall" class="install-btn install-btn-primary">Thêm</button>
-          <button type="button" id="btnDismiss" class="install-btn install-btn-secondary">Để sau</button>
+          <button
+            type="button"
+            id="btnInstall"
+            class="install-btn install-btn-primary"
+          >
+            Thêm
+          </button>
+          <button
+            type="button"
+            id="btnDismiss"
+            class="install-btn install-btn-secondary"
+          >
+            Để sau
+          </button>
         </div>
       </div>
     </div>
@@ -37,7 +52,7 @@
     <div class="wrap">
       <!-- Mode Selection Screen -->
       <div id="modeScreen">
-        <h2>🎯 Loto Tân Tân</h2>
+        <h2>🎯 Loto Tân Tân by Fly Vo</h2>
         <p class="mode-subtitle">Chọn cách chơi của bạn</p>
         <div class="mode-selection">
           <button class="mode-btn" id="btnSingleMode">
@@ -56,7 +71,14 @@
       <!-- Board Selection Screen -->
       <div id="selectScreen" class="hidden">
         <div class="select-screen-header">
-          <button type="button" class="btn-back-mode" id="btnBackToMode" title="Quay lại chọn mode">← Chọn mode</button>
+          <button
+            type="button"
+            class="btn-back-mode"
+            id="btnBackToMode"
+            title="Quay lại chọn mode"
+          >
+            ← Chọn mode
+          </button>
           <h2 id="selectTitle">🎯 Chọn bàn Loto</h2>
         </div>
         <div id="multiSelectInfo" class="hidden multi-select-info">
@@ -76,7 +98,12 @@
       <!-- Game Screen -->
       <div id="gameScreen" class="hidden">
         <div class="actions" id="actionsBar">
-          <button class="theme-toggle theme-toggle-inline" id="themeToggleGame" title="Chuyển đổi theme" aria-label="Chuyển đổi theme">
+          <button
+            class="theme-toggle theme-toggle-inline"
+            id="themeToggleGame"
+            title="Chuyển đổi theme"
+            aria-label="Chuyển đổi theme"
+          >
             <span class="icon sun-icon active">☀️</span>
             <span class="icon moon-icon">🌙</span>
           </button>
@@ -101,7 +128,11 @@
         </div>
 
         <div id="boardsContainer"></div>
-        <div id="virtualNumpad" class="virtual-numpad hidden" aria-hidden="true">
+        <div
+          id="virtualNumpad"
+          class="virtual-numpad hidden"
+          aria-hidden="true"
+        >
           <div class="numpad-row">
             <button type="button" class="numpad-key" data-key="1">1</button>
             <button type="button" class="numpad-key" data-key="2">2</button>
@@ -118,9 +149,23 @@
             <button type="button" class="numpad-key" data-key="9">9</button>
           </div>
           <div class="numpad-row">
-            <button type="button" class="numpad-key numpad-key--backspace" data-key="backspace" aria-label="Xóa">⌫</button>
+            <button
+              type="button"
+              class="numpad-key numpad-key--backspace"
+              data-key="backspace"
+              aria-label="Xóa"
+            >
+              ⌫
+            </button>
             <button type="button" class="numpad-key" data-key="0">0</button>
-            <button type="button" class="numpad-key numpad-key--enter" data-key="enter" aria-label="Đánh dấu">✓</button>
+            <button
+              type="button"
+              class="numpad-key numpad-key--enter"
+              data-key="enter"
+              aria-label="Đánh dấu"
+            >
+              ✓
+            </button>
           </div>
         </div>
       </div>
