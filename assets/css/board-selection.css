@@ -1,5 +1,35 @@
 /* Board selection and multi-select styles */
 
+.select-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.btn-back-mode {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-back-mode:hover {
+  border-color: #3b82f6;
+  background: var(--hover-bg);
+}
+
+.select-screen-header h2 {
+  margin: 0;
+  flex: 1;
+}
+
 .board-list {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

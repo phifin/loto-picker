@@ -26,6 +26,7 @@ const elements = {
   selectedCount: document.getElementById("selectedCount"),
   selectTitle: document.getElementById("selectTitle"),
   themeToggleGame: document.getElementById("themeToggleGame"),
+  btnBackToMode: document.getElementById("btnBackToMode"),
 };
 
 // Initialize game components
@@ -54,6 +55,12 @@ elements.btnMultiMode.onclick = () => {
   uiManager.updateSelectedCount(0);
   // Require at least 2 boards
   elements.btnStartMulti.disabled = true;
+};
+
+// Back to mode selection from board selection screen
+elements.btnBackToMode.onclick = () => {
+  multiBoardMgr.reset();
+  uiManager.showMode();
 };
 
 // Board selection handler for multi-mode
