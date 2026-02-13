@@ -82,13 +82,19 @@ export function setupEventHandlers(elements, gameState, uiManager, gameLogic, bo
     if (multiBoardMgr.isMulti()) {
       // Multi mode: go back to board selection
       uiManager.showSelect(true);
-      uiManager.renderBoardList(boards, (board) => {
+      
+      // Define the board selection handler
+      const handleBoardSelect = (board) => {
         multiBoardMgr.toggleBoard(board);
         const count = multiBoardMgr.getSelectedCount();
         uiManager.updateSelectedCount(count);
         elements.btnStartMulti.disabled = count < 2;
-        uiManager.renderBoardList(boards, arguments.callee, multiBoardMgr);
-      }, multiBoardMgr);
+        // Re-render board list to update UI
+        uiManager.renderBoardList(boards, handleBoardSelect, multiBoardMgr);
+      };
+      
+      // Initial render with current selection state
+      uiManager.renderBoardList(boards, handleBoardSelect, multiBoardMgr);
       uiManager.updateSelectedCount(multiBoardMgr.getSelectedCount());
       elements.btnStartMulti.disabled = multiBoardMgr.getSelectedCount() < 2;
     } else {
