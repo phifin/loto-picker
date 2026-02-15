@@ -6,6 +6,7 @@ export class BoardRenderer {
   constructor(boardsContainer, colorPickerEl) {
     this.boardsContainer = boardsContainer;
     this.colorPickerEl = colorPickerEl;
+    this.currentSwiper = null;
   }
 
   renderMultipleBoards(boards, multiBoardMgr, onCellClick) {
@@ -27,7 +28,7 @@ export class BoardRenderer {
       swiperContainer.appendChild(swiperWrapper);
     }
     
-    boards.forEach((boardData) => {
+    boards.forEach((boardData, index) => {
       const boardWrapper = document.createElement("div");
       boardWrapper.className = "board-wrapper";
       boardWrapper.dataset.boardId = boardData.id;
@@ -37,9 +38,36 @@ export class BoardRenderer {
         boardWrapper.classList.add("swiper-slide");
       }
       
-      const boardHeader = document.createElement("div");
-      boardHeader.className = "board-header";
-      boardHeader.innerHTML = `<h3>Bàn ${boardData.id}</h3>`;
+      // Add navigation for multi-board mode
+      if (boards.length > 1) {
+        const navigation = document.createElement("div");
+        navigation.className = "board-navigation";
+        
+        const prevBtn = document.createElement("button");
+        prevBtn.className = "board-nav-btn prev";
+        prevBtn.disabled = index === 0;
+        prevBtn.onclick = () => this.navigateToBoard(index - 1, boards, multiBoardMgr, onCellClick);
+        
+        const title = document.createElement("div");
+        title.className = "board-nav-title";
+        title.textContent = `Bàn ${boardData.id}`;
+        
+        const nextBtn = document.createElement("button");
+        nextBtn.className = "board-nav-btn next";
+        nextBtn.disabled = index === boards.length - 1;
+        nextBtn.onclick = () => this.navigateToBoard(index + 1, boards, multiBoardMgr, onCellClick);
+        
+        navigation.appendChild(prevBtn);
+        navigation.appendChild(title);
+        navigation.appendChild(nextBtn);
+        boardWrapper.appendChild(navigation);
+      } else {
+        // Single board - just show title
+        const boardHeader = document.createElement("div");
+        boardHeader.className = "board-header";
+        boardHeader.innerHTML = `<h3>Bàn ${boardData.id}</h3>`;
+        boardWrapper.appendChild(boardHeader);
+      }
       
       const boardElement = document.createElement("div");
       boardElement.className = "board";
@@ -67,7 +95,6 @@ export class BoardRenderer {
         });
       });
       
-      boardWrapper.appendChild(boardHeader);
       boardWrapper.appendChild(boardElement);
       
       if (isMobile) {
@@ -84,8 +111,8 @@ export class BoardRenderer {
       pagination.className = "swiper-pagination";
       swiperContainer.appendChild(pagination);
       
-      // Initialize Swiper without navigation
-      new Swiper(swiperContainer, {
+      // Initialize Swiper without navigation and store reference
+      this.currentSwiper = new Swiper(swiperContainer, {
         direction: 'horizontal',
         loop: false,
         spaceBetween: 10,
@@ -96,6 +123,8 @@ export class BoardRenderer {
         slidesPerView: 1,
         centeredSlides: true,
       });
+    } else {
+      this.currentSwiper = null;
     }
   }
 
@@ -117,6 +146,21 @@ export class BoardRenderer {
     this.boardsContainer
       .querySelectorAll(".marked, .row-complete, .flash")
       .forEach((el) => el.classList.remove("marked", "row-complete", "flash"));
+  }
+
+  navigateToBoard(targetIndex, boards, multiBoardMgr, onCellClick) {
+    if (targetIndex < 0 || targetIndex >= boards.length) return;
+    
+    // On mobile, use Swiper API to navigate
+    if (this.currentSwiper) {
+      this.currentSwiper.slideTo(targetIndex);
+    } else {
+      // On desktop, scroll to the target board
+      const targetBoard = this.boardsContainer.querySelector(`[data-board-id="${boards[targetIndex].id}"]`);
+      if (targetBoard) {
+        targetBoard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
   }
 
   getRowCells(rowIndex) {
