@@ -23,7 +23,9 @@ export function playNumberAudio(number) {
 
   stopCurrentAudio();
 
-  const audio = new Audio(`${AUDIO_BASE_PATH}/${n}.mp3`);
+  // Files are named 1.mp3, 2.mp3, ... 9.mp3, 10.mp3, ...
+  const filename = String(n);
+  const audio = new Audio(`${AUDIO_BASE_PATH}/${filename}.mp3`);
   currentAudio = audio;
 
   audio.play().catch(() => {

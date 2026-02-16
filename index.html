@@ -18,7 +18,10 @@
     />
 
     <link rel="stylesheet" href="./assets/styles.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
   </head>
   <body>
     <!-- Install Prompt Banner -->
@@ -60,7 +63,7 @@
             id="btnBackToRole"
             title="Quay lại chọn vai trò"
           >
-            ← Quay lại vai trò
+            ←
           </button>
           <h2>🎯 Loto Tân Tân by Fly Vo</h2>
         </div>
@@ -107,7 +110,7 @@
             id="btnBackToMode"
             title="Quay lại chọn mode"
           >
-            ← Chọn mode
+            ←
           </button>
           <h2 id="selectTitle">🎯 Chọn bàn Loto</h2>
         </div>
@@ -129,7 +132,7 @@
       <div id="gameScreen" class="hidden">
         <div class="actions" id="actionsBar">
           <button
-            class="theme-toggle theme-toggle-inline"
+            class="theme-toggle theme-toggle-inline mobile-hidden"
             id="themeToggleGame"
             title="Chuyển đổi theme"
             aria-label="Chuyển đổi theme"
@@ -143,11 +146,11 @@
             inputmode="numeric"
             autocomplete="off"
             maxlength="2"
-            placeholder="Nhập số → Enter"
+            placeholder="Nhập số ✓"
             aria-label="Nhập số"
           />
           <!-- Host-only controls (shown when ở vai trò Chủ trò) -->
-          <button class="action-btn host-only" id="btnHostStartPause">
+          <button class="action-btn action-btn--no-shrink host-only" id="btnHostStartPause">
             Bắt đầu
           </button>
           <button class="action-btn host-only" id="btnHostSettings">
@@ -156,24 +159,40 @@
           <button class="action-btn host-only" id="btnHostCheck">
             Kiểm tra
           </button>
-          <button class="action-btn host-only" id="btnHostMore">
-            ⋯
-          </button>
           <label
-            class="color-picker-wrap"
+            class="color-picker-wrap mobile-hidden"
             title="Đổi màu bàn"
             id="colorPickerWrap"
           >
             <input type="color" id="colorPicker" />
           </label>
-          <button class="action-btn" id="btnReset">Reset ván mới</button>
-          <button class="action-btn" id="btnBack">← Đổi bàn</button>
+          <button class="action-btn action-btn--no-shrink" id="btnReset">
+            Chơi mới
+          </button>
+          <button class="action-btn action-btn--no-shrink player-only host-back-desktop" id="btnBack">
+            ← Đổi bàn
+          </button>
+          <!-- More buttons at the end (rightmost) -->
+          <button class="action-btn host-only" id="btnHostMore">⋯</button>
+          <button class="action-btn player-only" id="btnPlayerMore">⋯</button>
         </div>
 
-        <!-- Host More menu (mobile) -->
+        <!-- Host More menu (mobile, host role) -->
         <div id="hostMoreMenu" class="host-more-menu">
+          <button type="button" id="hostMoreThemeToggle">
+            Giao diện sáng / tối
+          </button>
           <button type="button" id="hostMoreSettings">Cài đặt</button>
           <button type="button" id="hostMoreCheck">Kiểm tra</button>
+          <button type="button" id="hostMoreBack">← Đổi bàn</button>
+        </div>
+
+        <!-- Player / general More menu (theme + color) -->
+        <div id="playerMoreMenu" class="host-more-menu">
+          <button type="button" id="playerMoreThemeToggle">
+            Giao diện sáng / tối
+          </button>
+          <button type="button" id="playerMoreColor">Đổi màu bàn</button>
         </div>
 
         <div id="boardsContainer"></div>

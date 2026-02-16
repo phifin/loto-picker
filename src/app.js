@@ -41,6 +41,8 @@ const elements = {
   btnBackToMode: document.getElementById("btnBackToMode"),
   btnBackToRole: document.getElementById("btnBackToRole"),
   actionsBar: document.getElementById("actionsBar"),
+  btnPlayerMore: document.getElementById("btnPlayerMore"),
+  playerMoreMenu: document.getElementById("playerMoreMenu"),
 };
 
 // Apply color picker color to Reset and Đổi bàn buttons
@@ -63,6 +65,31 @@ watchSystemTheme(themeManager);
 
 // Initialize PWA install prompt
 initInstallPrompt();
+
+// --- Player/general More menu (theme + color) ---
+if (elements.btnPlayerMore && elements.playerMoreMenu) {
+  const themeToggleBtn = elements.themeToggleGame;
+  const colorInput = elements.colorPickerEl;
+
+  const togglePlayerMenu = () => {
+    elements.playerMoreMenu.classList.toggle("open");
+  };
+
+  elements.btnPlayerMore.addEventListener("click", togglePlayerMenu);
+
+  const btnPlayerTheme = document.getElementById("playerMoreThemeToggle");
+  const btnPlayerColor = document.getElementById("playerMoreColor");
+
+  btnPlayerTheme?.addEventListener("click", () => {
+    elements.playerMoreMenu.classList.remove("open");
+    themeToggleBtn?.click();
+  });
+
+  btnPlayerColor?.addEventListener("click", () => {
+    elements.playerMoreMenu.classList.remove("open");
+    colorInput?.click();
+  });
+}
 
 // --- Role & mode flow ---
 let currentRole = null; // 'user' | 'host'

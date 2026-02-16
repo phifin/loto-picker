@@ -64,6 +64,8 @@ export class HostToolbar {
 
       const moreSettings = document.getElementById("hostMoreSettings");
       const moreCheck = document.getElementById("hostMoreCheck");
+      const moreThemeToggle = document.getElementById("hostMoreThemeToggle");
+      const moreBack = document.getElementById("hostMoreBack");
 
       moreSettings?.addEventListener("click", () => {
         this.moreMenu.classList.remove("open");
@@ -72,6 +74,18 @@ export class HostToolbar {
       moreCheck?.addEventListener("click", () => {
         this.moreMenu.classList.remove("open");
         openCheck();
+      });
+      moreThemeToggle?.addEventListener("click", () => {
+        this.moreMenu.classList.remove("open");
+        // Reuse main theme toggle button
+        const themeBtn = this.elements.themeToggleGame || document.getElementById("themeToggleGame");
+        themeBtn?.click();
+      });
+      moreBack?.addEventListener("click", () => {
+        this.moreMenu.classList.remove("open");
+        // Trigger the back button click (which is hidden in host mode)
+        const backBtn = this.elements.btnBack || document.getElementById("btnBack");
+        backBtn?.click();
       });
     }
 
@@ -98,7 +112,7 @@ export class HostToolbar {
       this.btnSettings.classList.add("host-toolbar-hidden");
       this.btnCheck.classList.add("host-toolbar-hidden");
     } else {
-      // Desktop / tablet: show inline Settings / Check, hide More (⋯)
+      // Desktop / tablet: show ALL buttons inline, hide More (⋯)
       this.btnMore.classList.add("host-toolbar-hidden");
       this.btnSettings.classList.remove("host-toolbar-hidden");
       this.btnCheck.classList.remove("host-toolbar-hidden");
