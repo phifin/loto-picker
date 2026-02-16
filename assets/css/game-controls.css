@@ -1,8 +1,8 @@
 /* Game controls and action bar */
 
 .actions {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto auto;
+  display: flex;
+  flex-wrap: nowrap;
   gap: 8px;
   align-items: center;
   margin: 6px 0 10px;
@@ -10,6 +10,7 @@
   border-radius: 12px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
+  overflow-x: auto;
 }
 
 .color-picker-wrap {
@@ -46,7 +47,7 @@
 }
 
 #numberInput {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
   padding: 9px 12px;
   font-size: 14px;
@@ -93,4 +94,169 @@ button:active {
 .actions .action-btn {
   background: linear-gradient(135deg, var(--action-btn-color, var(--danger)) 0%, color-mix(in srgb, var(--action-btn-color, var(--danger)) 80%, black) 100%);
   box-shadow: 0 6px 14px color-mix(in srgb, var(--action-btn-color, var(--danger)) 35%, transparent);
+}
+
+/* Host-only controls */
+.host-only {
+  display: none;
+}
+
+body.host-mode .host-only {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Host More menu (mobile) */
+.host-more-menu {
+  position: absolute;
+  right: 16px;
+  top: 64px;
+  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 6px;
+  display: none;
+  z-index: 20;
+}
+
+.host-more-menu.open {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.host-more-menu button {
+  width: 100%;
+  background: var(--bg-secondary);
+  color: var(--text);
+  box-shadow: none;
+  font-size: 13px;
+}
+
+/* Explicit hiding for host toolbar controls (overrides host-mode visibility) */
+.host-toolbar-hidden {
+  display: none !important;
+}
+
+/* Simple modal styles reused by host modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-dialog {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px 18px 14px;
+  max-width: 360px;
+  width: calc(100vw - 40px);
+  box-shadow: var(--shadow);
+}
+
+.modal-title {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.modal-text {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.modal-actions .action-btn.primary {
+  background: linear-gradient(135deg, var(--danger) 0%, var(--danger2) 100%);
+}
+
+.host-settings .settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.host-settings .settings-input {
+  width: 80px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.host-settings .settings-checkbox {
+  margin-right: 8px;
+}
+
+.host-check .section-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.host-check .called-list {
+  margin-bottom: 12px;
+}
+
+.host-check .numbers-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.host-check .number-chip {
+  min-width: 24px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  font-size: 12px;
+  text-align: center;
+}
+
+.host-check .empty-text {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.otp-inputs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.otp-inputs .otp-input {
+  width: 42px;
+  padding: 6px 4px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  font-size: 14px;
+}
+
+.check-result {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.check-result.valid {
+  color: #16a34a;
+}
+
+.check-result.invalid {
+  color: #dc2626;
 }

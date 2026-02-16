@@ -1,5 +1,20 @@
 /* Mode selection screen styles */
 
+.mode-screen-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.mode-screen-header h2 {
+  margin: 0;
+  grid-column: 2;
+  justify-self: center;
+  text-align: center;
+}
+
 .mode-subtitle {
   text-align: center;
   color: var(--muted);
