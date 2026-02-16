@@ -96,6 +96,12 @@ button:active {
   box-shadow: 0 6px 14px color-mix(in srgb, var(--action-btn-color, var(--danger)) 35%, transparent);
 }
 
+/* Prevent important action buttons from shrinking/wrapping */
+.actions .action-btn--no-shrink {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 /* Host-only controls */
 .host-only {
   display: none;
@@ -105,6 +111,39 @@ body.host-mode .host-only {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Player-only controls (hidden when in host mode) */
+.player-only {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.host-mode .player-only {
+  display: none;
+}
+
+/* Host back button: show on desktop in host mode, hide on mobile (use More menu instead) */
+body.host-mode .host-back-desktop {
+  display: inline-flex;
+}
+
+@media (max-width: 767px) {
+  body.host-mode .host-back-desktop {
+    display: none;
+  }
+}
+
+/* Player More button: only show on mobile, hide on desktop (theme/color are inline) */
+#btnPlayerMore {
+  display: inline-flex;
+}
+
+@media (min-width: 768px) {
+  #btnPlayerMore {
+    display: none !important;
+  }
 }
 
 /* Host More menu (mobile) */
@@ -138,6 +177,35 @@ body.host-mode .host-only {
 /* Explicit hiding for host toolbar controls (overrides host-mode visibility) */
 .host-toolbar-hidden {
   display: none !important;
+}
+
+/* Mobile-hidden: visible on desktop, hidden on mobile */
+.mobile-hidden {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  /* On mobile, show theme/color items in More menu */
+  #hostMoreThemeToggle,
+  #playerMoreThemeToggle,
+  #playerMoreColor {
+    display: block;
+  }
+}
+
+/* On desktop, hide theme/color items in More menu (since they're visible inline) */
+@media (min-width: 768px) {
+  #hostMoreThemeToggle,
+  #playerMoreThemeToggle,
+  #playerMoreColor {
+    display: none;
+  }
 }
 
 /* Simple modal styles reused by host modals */
