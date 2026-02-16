@@ -12,6 +12,7 @@ import {
   createMultiCellClickHandler,
 } from "./events/eventHandlers.js";
 import { HostController } from "./ui/host/hostScreen.js";
+import { initAudioPreload } from "./services/audioPlayer.js";
 
 // DOM elements
 const elements = {
@@ -65,6 +66,9 @@ watchSystemTheme(themeManager);
 
 // Initialize PWA install prompt
 initInstallPrompt();
+
+// Initialize audio preloading for better mobile performance
+initAudioPreload();
 
 // --- Player/general More menu (theme + color) ---
 if (elements.btnPlayerMore && elements.playerMoreMenu) {
