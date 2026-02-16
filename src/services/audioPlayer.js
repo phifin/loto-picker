@@ -9,6 +9,50 @@ const MAX_NUMBER = 90;
 const audioCache = new Map();
 let preloadPromise = null;
 let currentAudio = null;
+let audioContextUnlocked = false;
+
+/**
+ * Unlock audio context on mobile (requires user interaction)
+ */
+function unlockAudioContext() {
+  if (audioContextUnlocked) return;
+  
+  // Create a silent audio to unlock audio context
+  const unlockAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQQAAAAAAA==");
+  unlockAudio.volume = 0.01;
+  
+  const playPromise = unlockAudio.play();
+  if (playPromise !== undefined) {
+    playPromise
+      .then(() => {
+        unlockAudio.pause();
+        audioContextUnlocked = true;
+      })
+      .catch(() => {
+        // Ignore unlock errors
+      });
+  }
+}
+
+/**
+ * Initialize audio context unlock (call on first user interaction)
+ */
+export function initAudioContext() {
+  if (audioContextUnlocked) return;
+  
+  // Unlock on any user interaction
+  const unlockEvents = ["touchstart", "touchend", "mousedown", "keydown"];
+  const unlockHandler = () => {
+    unlockAudioContext();
+    unlockEvents.forEach(event => {
+      document.removeEventListener(event, unlockHandler, { once: true });
+    });
+  };
+  
+  unlockEvents.forEach(event => {
+    document.addEventListener(event, unlockHandler, { once: true, passive: true });
+  });
+}
 
 /**
  * Preload all audio files for better mobile performance
@@ -66,6 +110,9 @@ function preloadAllAudio() {
  * Initialize audio preloading (call this early in app lifecycle)
  */
 export function initAudioPreload() {
+  // Initialize audio context unlock
+  initAudioContext();
+  
   // Start preloading in background, don't block
   preloadAllAudio().catch(() => {
     // Ignore preload errors
@@ -86,6 +133,7 @@ export function stopCurrentAudio() {
 
 /**
  * Play audio for a number with retry logic for mobile
+ * On mobile, we create a new Audio instance each time to avoid reuse issues
  */
 export function playNumberAudio(number) {
   const n = Number(number);
@@ -93,56 +141,132 @@ export function playNumberAudio(number) {
 
   stopCurrentAudio();
 
-  // Get audio from cache or create new one
-  let audio = audioCache.get(n);
+  // On mobile, always create a new Audio instance to avoid reuse issues
+  // On desktop, we can reuse cached audio
+  const isMobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
-  if (!audio) {
-    // Fallback: create new audio if not in cache yet
+  let audio;
+  if (isMobile) {
+    // Mobile: create new Audio instance each time
     const filename = String(n);
     audio = new Audio(`${AUDIO_BASE_PATH}/${filename}.mp3`);
     audio.preload = "auto";
-    audioCache.set(n, audio);
+    // Load immediately
+    audio.load();
   } else {
-    // Reset audio to beginning if reusing cached audio
-    audio.currentTime = 0;
+    // Desktop: try to reuse cached audio
+    audio = audioCache.get(n);
+    if (!audio) {
+      const filename = String(n);
+      audio = new Audio(`${AUDIO_BASE_PATH}/${filename}.mp3`);
+      audio.preload = "auto";
+      audioCache.set(n, audio);
+    } else {
+      // Reset to beginning
+      audio.currentTime = 0;
+    }
   }
 
   currentAudio = audio;
 
   // Try to play with retry logic for mobile
-  const attemptPlay = (retries = 2) => {
+  const attemptPlay = (retries = 3) => {
+    // Try to unlock audio context if not already unlocked
+    if (!audioContextUnlocked && isMobile) {
+      unlockAudioContext();
+    }
+    
+    // Ensure audio is loaded
+    if (audio.readyState === 0) {
+      audio.load();
+    }
+    
+    // Wait for audio to be ready if needed
+    if (audio.readyState < 2 && retries > 0) {
+      const onCanPlay = () => {
+        audio.removeEventListener("canplay", onCanPlay);
+        audio.removeEventListener("canplaythrough", onCanPlayThrough);
+        audio.removeEventListener("error", onError);
+        audio.currentTime = 0;
+        attemptPlay(retries - 1);
+      };
+      
+      const onCanPlayThrough = () => {
+        audio.removeEventListener("canplay", onCanPlay);
+        audio.removeEventListener("canplaythrough", onCanPlayThrough);
+        audio.removeEventListener("error", onError);
+        audio.currentTime = 0;
+        attemptPlay(retries - 1);
+      };
+      
+      const onError = (error) => {
+        audio.removeEventListener("canplay", onCanPlay);
+        audio.removeEventListener("canplaythrough", onCanPlayThrough);
+        audio.removeEventListener("error", onError);
+        console.warn(`Audio load error for number ${n}:`, error);
+        if (retries > 0) {
+          // Retry with new audio instance on mobile
+          if (isMobile) {
+            setTimeout(() => {
+              const filename = String(n);
+              const newAudio = new Audio(`${AUDIO_BASE_PATH}/${filename}.mp3`);
+              newAudio.preload = "auto";
+              newAudio.load();
+              currentAudio = newAudio;
+              attemptPlay(retries - 1);
+            }, 200);
+          }
+        }
+      };
+      
+      audio.addEventListener("canplay", onCanPlay, { once: true });
+      audio.addEventListener("canplaythrough", onCanPlayThrough, { once: true });
+      audio.addEventListener("error", onError, { once: true });
+      
+      // Trigger load
+      audio.load();
+      return;
+    }
+    
+    // Try to play
     const playPromise = audio.play();
     
     playPromise.catch((error) => {
       // On mobile, sometimes we need to wait for audio to be ready
-      if (retries > 0 && (error.name === "NotAllowedError" || error.name === "NotSupportedError")) {
-        // Wait a bit and retry
-        setTimeout(() => {
-          audio.currentTime = 0;
-          attemptPlay(retries - 1);
-        }, 100);
-        return;
-      }
-      
-      // If audio is not ready, wait for it
-      if (retries > 0 && audio.readyState < 2) {
-        audio.addEventListener(
-          "canplay",
-          () => {
-            audio.currentTime = 0;
-            attemptPlay(retries - 1);
-          },
-          { once: true }
-        );
-        // Trigger load if needed
-        if (audio.readyState === 0) {
-          audio.load();
+      if (retries > 0) {
+        if (error.name === "NotAllowedError" || error.name === "NotSupportedError") {
+          // Wait a bit and retry
+          setTimeout(() => {
+            if (currentAudio === audio) {
+              audio.currentTime = 0;
+              attemptPlay(retries - 1);
+            }
+          }, 150);
+          return;
         }
-        return;
+        
+        // If audio is not ready, wait for it
+        if (audio.readyState < 2) {
+          audio.addEventListener(
+            "canplay",
+            () => {
+              if (currentAudio === audio) {
+                audio.currentTime = 0;
+                attemptPlay(retries - 1);
+              }
+            },
+            { once: true }
+          );
+          // Trigger load if needed
+          if (audio.readyState === 0) {
+            audio.load();
+          }
+          return;
+        }
       }
       
-      // Final failure - fail silently
-      console.warn(`Failed to play audio for number ${n}:`, error);
+      // Final failure - log for debugging
+      console.warn(`Failed to play audio for number ${n} after ${3 - retries} retries:`, error);
     });
   };
 
@@ -151,6 +275,17 @@ export function playNumberAudio(number) {
   audio.addEventListener(
     "ended",
     () => {
+      if (currentAudio === audio) {
+        currentAudio = null;
+      }
+    },
+    { once: true }
+  );
+  
+  audio.addEventListener(
+    "error",
+    (e) => {
+      console.warn(`Audio error for number ${n}:`, e);
       if (currentAudio === audio) {
         currentAudio = null;
       }
