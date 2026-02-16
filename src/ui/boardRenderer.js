@@ -7,6 +7,9 @@ export class BoardRenderer {
     this.boardsContainer = boardsContainer;
     this.colorPickerEl = colorPickerEl;
     this.currentSwiper = null;
+    this.currentPage = 0;
+    this.boardsPerPage = 3;
+    this.boardsGridDesktop = null; // Store desktop grid reference
   }
 
   renderMultipleBoards(boards, multiBoardMgr, onCellClick) {
@@ -16,6 +19,7 @@ export class BoardRenderer {
     const isMobile = window.innerWidth < 768;
     let swiperContainer = null;
     let swiperWrapper = null;
+    let boardsGrid = null;
     
     if (isMobile) {
       swiperContainer = document.createElement("div");
@@ -26,41 +30,70 @@ export class BoardRenderer {
       
       this.boardsContainer.appendChild(swiperContainer);
       swiperContainer.appendChild(swiperWrapper);
+    } else {
+      // Desktop: create pagination container
+      const paginationContainer = document.createElement("div");
+      paginationContainer.className = "boards-pagination-container";
+      this.boardsContainer.appendChild(paginationContainer);
+      
+      boardsGrid = document.createElement("div");
+      boardsGrid.className = "boards-grid-desktop";
+      paginationContainer.appendChild(boardsGrid);
+      
+      this.boardsGridDesktop = boardsGrid; // Store reference
     }
     
     boards.forEach((boardData, index) => {
       const boardWrapper = document.createElement("div");
       boardWrapper.className = "board-wrapper";
       boardWrapper.dataset.boardId = boardData.id;
+      boardWrapper.dataset.boardIndex = index;
       
       // Add swiper slide class on mobile
       if (isMobile) {
         boardWrapper.classList.add("swiper-slide");
+      } else {
+        // Desktop: add page class for pagination
+        const pageIndex = Math.floor(index / this.boardsPerPage);
+        boardWrapper.classList.add("board-page");
+        boardWrapper.dataset.page = pageIndex;
+        if (pageIndex !== 0) {
+          boardWrapper.classList.add("hidden");
+        }
       }
       
-      // Add navigation for multi-board mode
+      // Add navigation for multi-board mode (only on mobile)
       if (boards.length > 1) {
-        const navigation = document.createElement("div");
-        navigation.className = "board-navigation";
-        
-        const prevBtn = document.createElement("button");
-        prevBtn.className = "board-nav-btn prev";
-        prevBtn.disabled = index === 0;
-        prevBtn.onclick = () => this.navigateToBoard(index - 1, boards, multiBoardMgr, onCellClick);
-        
-        const title = document.createElement("div");
-        title.className = "board-nav-title";
-        title.textContent = `Bàn ${boardData.id}`;
-        
-        const nextBtn = document.createElement("button");
-        nextBtn.className = "board-nav-btn next";
-        nextBtn.disabled = index === boards.length - 1;
-        nextBtn.onclick = () => this.navigateToBoard(index + 1, boards, multiBoardMgr, onCellClick);
-        
-        navigation.appendChild(prevBtn);
-        navigation.appendChild(title);
-        navigation.appendChild(nextBtn);
-        boardWrapper.appendChild(navigation);
+        if (isMobile) {
+          // Mobile: show navigation arrows
+          const navigation = document.createElement("div");
+          navigation.className = "board-navigation";
+          
+          const prevBtn = document.createElement("button");
+          prevBtn.className = "board-nav-btn prev";
+          prevBtn.disabled = index === 0;
+          prevBtn.onclick = () => this.navigateToBoard(index - 1, boards, multiBoardMgr, onCellClick);
+          
+          const title = document.createElement("div");
+          title.className = "board-nav-title";
+          title.textContent = `Bàn ${boardData.id}`;
+          
+          const nextBtn = document.createElement("button");
+          nextBtn.className = "board-nav-btn next";
+          nextBtn.disabled = index === boards.length - 1;
+          nextBtn.onclick = () => this.navigateToBoard(index + 1, boards, multiBoardMgr, onCellClick);
+          
+          navigation.appendChild(prevBtn);
+          navigation.appendChild(title);
+          navigation.appendChild(nextBtn);
+          boardWrapper.appendChild(navigation);
+        } else {
+          // Desktop: just show title without arrows
+          const boardHeader = document.createElement("div");
+          boardHeader.className = "board-header";
+          boardHeader.innerHTML = `<h3>Bàn ${boardData.id}</h3>`;
+          boardWrapper.appendChild(boardHeader);
+        }
       } else {
         // Single board - just show title
         const boardHeader = document.createElement("div");
@@ -100,7 +133,7 @@ export class BoardRenderer {
       if (isMobile) {
         swiperWrapper.appendChild(boardWrapper);
       } else {
-        this.boardsContainer.appendChild(boardWrapper);
+        boardsGrid.appendChild(boardWrapper);
       }
     });
     
@@ -125,6 +158,68 @@ export class BoardRenderer {
       });
     } else {
       this.currentSwiper = null;
+      
+      // Desktop: add pagination controls if more than 3 boards
+      if (boards.length > this.boardsPerPage && boardsGrid) {
+        const totalPages = Math.ceil(boards.length / this.boardsPerPage);
+        const paginationControls = document.createElement("div");
+        paginationControls.className = "boards-pagination-controls";
+        
+        for (let i = 0; i < totalPages; i++) {
+          const pageBtn = document.createElement("button");
+          pageBtn.className = "pagination-btn";
+          pageBtn.textContent = String(i + 1);
+          pageBtn.dataset.page = i;
+          if (i === 0) {
+            pageBtn.classList.add("active");
+          }
+          pageBtn.onclick = () => this.goToPage(i);
+          paginationControls.appendChild(pageBtn);
+        }
+        
+        // Find the pagination container and append controls
+        const paginationContainer = boardsGrid.parentElement;
+        if (paginationContainer && paginationContainer.classList.contains("boards-pagination-container")) {
+          paginationContainer.appendChild(paginationControls);
+        }
+      }
+    }
+  }
+  
+  goToPage(pageIndex) {
+    if (!this.boardsGridDesktop) return;
+    
+    const boards = this.boardsGridDesktop.querySelectorAll(".board-wrapper");
+    const totalPages = Math.ceil(boards.length / this.boardsPerPage);
+    
+    if (pageIndex < 0 || pageIndex >= totalPages) return;
+    
+    this.currentPage = pageIndex;
+    
+    // Hide all boards
+    boards.forEach((board) => {
+      board.classList.add("hidden");
+    });
+    
+    // Show boards for current page
+    const startIndex = pageIndex * this.boardsPerPage;
+    const endIndex = Math.min(startIndex + this.boardsPerPage, boards.length);
+    
+    for (let i = startIndex; i < endIndex; i++) {
+      boards[i].classList.remove("hidden");
+    }
+    
+    // Update pagination buttons
+    const paginationContainer = this.boardsGridDesktop.parentElement;
+    const paginationControls = paginationContainer?.querySelector(".boards-pagination-controls");
+    if (paginationControls) {
+      paginationControls.querySelectorAll(".pagination-btn").forEach((btn, idx) => {
+        if (idx === pageIndex) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
     }
   }
 
@@ -140,10 +235,18 @@ export class BoardRenderer {
 
   clearBoard() {
     this.boardsContainer.innerHTML = "";
+    this.boardsGridDesktop = null;
+    this.currentPage = 0;
+    if (this.currentSwiper) {
+      this.currentSwiper.destroy(true, true);
+      this.currentSwiper = null;
+    }
   }
 
   resetMarkedCells() {
-    this.boardsContainer
+    // Search in desktop grid or mobile swiper
+    const searchContainer = this.boardsGridDesktop || this.boardsContainer;
+    searchContainer
       .querySelectorAll(".marked, .row-complete, .flash")
       .forEach((el) => el.classList.remove("marked", "row-complete", "flash"));
   }
@@ -172,14 +275,18 @@ export class BoardRenderer {
   }
 
   getRowCellsForBoard(boardId, rowIndex) {
-    const boardEl = this.boardsContainer.querySelector(`.board[data-board-id="${boardId}"]`);
+    // Search in desktop grid or mobile swiper
+    const searchContainer = this.boardsGridDesktop || this.boardsContainer;
+    const boardEl = searchContainer.querySelector(`.board[data-board-id="${boardId}"]`);
     if (!boardEl) return [];
     const start = rowIndex * 9;
     return [...boardEl.children].slice(start, start + 9);
   }
 
   getCellElement(boardId, number) {
-    const cells = this.boardsContainer.querySelectorAll(`.cell.num[data-board-id="${boardId}"]`);
+    // Search in desktop grid or mobile swiper
+    const searchContainer = this.boardsGridDesktop || this.boardsContainer;
+    const cells = searchContainer.querySelectorAll(`.cell.num[data-board-id="${boardId}"]`);
     for (const cell of cells) {
       if (cell.textContent === String(number)) {
         return cell;

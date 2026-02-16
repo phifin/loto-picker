@@ -1,4 +1,4 @@
-/* Multi-board navigation arrows */
+/* Multi-board navigation arrows (mobile only) */
 .board-navigation {
   display: flex;
   align-items: center;
@@ -6,6 +6,13 @@
   gap: 12px;
   margin-bottom: 8px;
   padding: 0 8px;
+}
+
+/* Hide navigation arrows on desktop */
+@media (min-width: 768px) {
+  .board-navigation {
+    display: none;
+  }
 }
 
 .board-nav-btn {
