@@ -75,11 +75,26 @@ if (elements.btnPlayerMore && elements.playerMoreMenu) {
   const themeToggleBtn = elements.themeToggleGame;
   const colorInput = elements.colorPickerEl;
 
-  const togglePlayerMenu = () => {
+  const togglePlayerMenu = (e) => {
+    e.stopPropagation();
     elements.playerMoreMenu.classList.toggle("open");
   };
 
   elements.btnPlayerMore.addEventListener("click", togglePlayerMenu);
+
+  // Click outside to close menu
+  const handleClickOutside = (e) => {
+    if (
+      elements.playerMoreMenu.classList.contains("open") &&
+      !elements.playerMoreMenu.contains(e.target) &&
+      !elements.btnPlayerMore.contains(e.target)
+    ) {
+      elements.playerMoreMenu.classList.remove("open");
+    }
+  };
+
+  // Use capture phase to catch clicks before they bubble
+  document.addEventListener("click", handleClickOutside, true);
 
   const btnPlayerTheme = document.getElementById("playerMoreThemeToggle");
   const btnPlayerColor = document.getElementById("playerMoreColor");

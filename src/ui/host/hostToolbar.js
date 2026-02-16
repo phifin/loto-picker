@@ -58,9 +58,26 @@ export class HostToolbar {
     }
 
     if (this.btnMore && this.moreMenu) {
-      this.btnMore.addEventListener("click", () => {
+      const toggleMoreMenu = (e) => {
+        e.stopPropagation();
         this.moreMenu.classList.toggle("open");
-      });
+      };
+
+      this.btnMore.addEventListener("click", toggleMoreMenu);
+
+      // Click outside to close menu
+      const handleClickOutside = (e) => {
+        if (
+          this.moreMenu.classList.contains("open") &&
+          !this.moreMenu.contains(e.target) &&
+          !this.btnMore.contains(e.target)
+        ) {
+          this.moreMenu.classList.remove("open");
+        }
+      };
+
+      // Use capture phase to catch clicks before they bubble
+      document.addEventListener("click", handleClickOutside, true);
 
       const moreSettings = document.getElementById("hostMoreSettings");
       const moreCheck = document.getElementById("hostMoreCheck");
