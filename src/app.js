@@ -12,6 +12,7 @@ import {
   createMultiCellClickHandler,
 } from "./events/eventHandlers.js";
 import { HostController } from "./ui/host/hostScreen.js";
+import { initAudioPreload } from "./services/audioPlayer.js";
 
 // DOM elements
 const elements = {
@@ -65,6 +66,9 @@ watchSystemTheme(themeManager);
 
 // Initialize PWA install prompt
 initInstallPrompt();
+
+// Initialize audio preloading for better mobile performance
+initAudioPreload();
 
 // --- Player/general More menu (theme + color) ---
 if (elements.btnPlayerMore && elements.playerMoreMenu) {
@@ -306,9 +310,48 @@ setupEventHandlers(
   }
 );
 
+// Loading screen management
+const loadingScreen = document.getElementById("loadingScreen");
+let loadingHidden = false;
+
+function hideLoadingScreen() {
+  if (loadingHidden || !loadingScreen) return;
+  loadingHidden = true;
+  
+  loadingScreen.classList.add("hidden");
+  // Remove from DOM after animation completes
+  setTimeout(() => {
+    if (loadingScreen && loadingScreen.parentNode) {
+      loadingScreen.remove();
+    }
+  }, 300);
+}
+
 // Initial render
 function init() {
+  // Wait for DOM to be fully ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      startApp();
+    });
+  } else {
+    startApp();
+  }
+}
+
+function startApp() {
   uiManager.showMode();
+  
+  // Hide loading screen after ensuring UI is rendered
+  // Use requestAnimationFrame to ensure DOM is painted
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // Small delay to ensure initial render completes
+      setTimeout(() => {
+        hideLoadingScreen();
+      }, 200);
+    });
+  });
 }
 
 // Start the app
