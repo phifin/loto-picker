@@ -140,6 +140,11 @@ body.host-mode .host-back-desktop {
   display: inline-flex;
 }
 
+/* Hide player More button when in host mode (both mobile and desktop) */
+body.host-mode #btnPlayerMore {
+  display: none !important;
+}
+
 @media (min-width: 768px) {
   #btnPlayerMore {
     display: none !important;
