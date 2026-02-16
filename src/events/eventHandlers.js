@@ -2,11 +2,28 @@
 import { saveMarked, clearMarked } from "../services/storage.js";
 import { initVirtualNumpad } from "../ui/virtualNumpad.js";
 
-export function setupEventHandlers(elements, gameState, uiManager, gameLogic, boards, startSingleGame, multiBoardMgr, startMultiGame, applyActionButtonsColor) {
+export function setupEventHandlers(
+  elements,
+  gameState,
+  uiManager,
+  gameLogic,
+  boards,
+  startSingleGame,
+  multiBoardMgr,
+  startMultiGame,
+  applyActionButtonsColor,
+  options = {}
+) {
   const { inputEl, btnReset, btnBack, colorPickerEl } = elements;
+  const { canManualTick, onBlocked } = options;
 
   // Submit số từ input (dùng cho cả keydown Enter và bàn phím ảo)
   function submitNumberInput(value) {
+    if (canManualTick && !canManualTick(value)) {
+      onBlocked?.(value);
+      return;
+    }
+
     if (multiBoardMgr.isMulti()) {
       const selectedBoards = multiBoardMgr.getSelectedBoards();
       selectedBoards.forEach(board => {
@@ -119,6 +136,7 @@ export function createCellClickHandler(gameState, gameLogic, uiManager, boardId)
 // Cell click handler factory for multi-board
 export function createMultiCellClickHandler(multiBoardMgr, gameLogic, uiManager, boards) {
   return (number, boardId, cellElement, rowIndex) => {
+    // Manual toggle without validation by default; host mode can wrap this factory if needed
     const isMarked = cellElement.classList.contains("marked");
     
     // Sync across all boards

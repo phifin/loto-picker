@@ -23,22 +23,7 @@
     border-radius: 7px;
   }
   
-  .actions {
-    grid-template-columns: auto 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 8px;
-  }
-  
-  .actions .theme-toggle-inline {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  
-  .actions #numberInput {
-    grid-column: 2 / -1;
-    grid-row: 1;
-    min-width: 0;
-  }
+  /* Toolbar now stays on a single row; flex handled in game-controls.css */
   
   .virtual-numpad .numpad-key {
     min-height: 44px;

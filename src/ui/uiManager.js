@@ -12,6 +12,12 @@ export class UIManager {
   }
 
   // Screen management delegation
+  setStep(step) {
+    if (this.screenManager.setStep) {
+      this.screenManager.setStep(step);
+    }
+  }
+
   showMode() {
     this.screenManager.showMode();
   }

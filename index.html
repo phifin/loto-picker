@@ -51,11 +51,40 @@
     </div>
 
     <div class="wrap">
-      <!-- Mode Selection Screen -->
+      <!-- Role + Mode Selection Screen -->
       <div id="modeScreen">
-        <h2>🎯 Loto Tân Tân by Fly Vo</h2>
-        <p class="mode-subtitle">Chọn cách chơi của bạn</p>
-        <div class="mode-selection">
+        <div class="mode-screen-header">
+          <button
+            type="button"
+            class="btn-back-mode hidden"
+            id="btnBackToRole"
+            title="Quay lại chọn vai trò"
+          >
+            ← Quay lại vai trò
+          </button>
+          <h2>🎯 Loto Tân Tân by Fly Vo</h2>
+        </div>
+
+        <!-- Step 1: Role selection -->
+        <p class="mode-subtitle" id="roleSubtitle">Chọn vai trò của bạn</p>
+        <div class="role-selection mode-selection" id="roleSelection">
+          <button class="mode-btn" id="btnRoleUser">
+            <span class="mode-icon">🙂</span>
+            <span class="mode-title">Người chơi</span>
+            <span class="mode-desc">Đánh dấu số theo người đọc</span>
+          </button>
+          <button class="mode-btn" id="btnRoleHost">
+            <span class="mode-icon">🎙️</span>
+            <span class="mode-title">Chủ trò</span>
+            <span class="mode-desc">Gọi số ngẫu nhiên + âm thanh</span>
+          </button>
+        </div>
+
+        <!-- Step 2: Mode selection (shown after role is chosen) -->
+        <p class="mode-subtitle hidden" id="modeSubtitle">
+          Chọn cách chơi của bạn
+        </p>
+        <div class="mode-selection hidden" id="modeSelection">
           <button class="mode-btn" id="btnSingleMode">
             <span class="mode-icon">🎲</span>
             <span class="mode-title">Chơi 1 bàn</span>
@@ -117,6 +146,19 @@
             placeholder="Nhập số → Enter"
             aria-label="Nhập số"
           />
+          <!-- Host-only controls (shown when ở vai trò Chủ trò) -->
+          <button class="action-btn host-only" id="btnHostStartPause">
+            Bắt đầu
+          </button>
+          <button class="action-btn host-only" id="btnHostSettings">
+            Cài đặt
+          </button>
+          <button class="action-btn host-only" id="btnHostCheck">
+            Kiểm tra
+          </button>
+          <button class="action-btn host-only" id="btnHostMore">
+            ⋯
+          </button>
           <label
             class="color-picker-wrap"
             title="Đổi màu bàn"
@@ -126,6 +168,12 @@
           </label>
           <button class="action-btn" id="btnReset">Reset ván mới</button>
           <button class="action-btn" id="btnBack">← Đổi bàn</button>
+        </div>
+
+        <!-- Host More menu (mobile) -->
+        <div id="hostMoreMenu" class="host-more-menu">
+          <button type="button" id="hostMoreSettings">Cài đặt</button>
+          <button type="button" id="hostMoreCheck">Kiểm tra</button>
         </div>
 
         <div id="boardsContainer"></div>
