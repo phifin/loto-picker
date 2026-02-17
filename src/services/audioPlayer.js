@@ -11,11 +11,55 @@ let preloadPromise = null;
 let currentAudio = null;
 let audioContextUnlocked = false;
 
+// Debug logger for mobile
+const debugLogs = [];
+const MAX_DEBUG_LOGS = 10;
+
+function debugLog(message) {
+  console.log(message);
+  debugLogs.push(`${new Date().toLocaleTimeString()}: ${message}`);
+  if (debugLogs.length > MAX_DEBUG_LOGS) {
+    debugLogs.shift();
+  }
+  updateDebugUI();
+}
+
+function updateDebugUI() {
+  let debugEl = document.getElementById('audioDebug');
+  if (!debugEl) {
+    debugEl = document.createElement('div');
+    debugEl.id = 'audioDebug';
+    debugEl.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-size:10px;padding:8px;max-height:150px;overflow-y:auto;z-index:9999;font-family:monospace;';
+    document.body.appendChild(debugEl);
+  }
+  debugEl.innerHTML = debugLogs.join('<br>');
+  debugEl.scrollTop = debugEl.scrollHeight;
+}
+
+// Clear debug on double tap
+if (typeof window !== 'undefined') {
+  let lastTap = 0;
+  document.addEventListener('touchend', (e) => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    if (tapLength < 300 && tapLength > 0) {
+      const debugEl = document.getElementById('audioDebug');
+      if (debugEl && e.target === debugEl) {
+        debugLogs.length = 0;
+        updateDebugUI();
+      }
+    }
+    lastTap = currentTime;
+  });
+}
+
 /**
  * Unlock audio context on mobile (requires user interaction)
  */
 async function unlockAudioContext() {
   if (audioContextUnlocked) return true;
+  
+  debugLog('[Unlock] Attempting to unlock audio context');
   
   try {
     // Create a silent audio to unlock audio context
@@ -25,9 +69,10 @@ async function unlockAudioContext() {
     await unlockAudio.play();
     unlockAudio.pause();
     audioContextUnlocked = true;
+    debugLog('[Unlock] Audio context unlocked successfully');
     return true;
   } catch (error) {
-    console.warn('Failed to unlock audio context:', error);
+    debugLog(`[Unlock] Failed: ${error.name} - ${error.message}`);
     return false;
   }
 }
@@ -136,23 +181,40 @@ export function playNumberAudio(number) {
   const n = Number(number);
   if (!Number.isInteger(n) || n < 1 || n > 90) return;
 
+  debugLog(`[Play] Number ${n} - Starting`);
+
   // Stop any currently playing audio
   stopCurrentAudio();
 
-  // Always try to get from cache first, create new if not exists
-  let audio = audioCache.get(n);
-  if (!audio) {
+  const isMobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  debugLog(`[Play] isMobile: ${isMobile}, unlocked: ${audioContextUnlocked}`);
+  
+  let audio;
+  
+  if (isMobile) {
+    // Mobile: Always create new Audio instance to avoid reuse issues
     const filename = String(n);
     audio = new Audio(`${AUDIO_BASE_PATH}/${filename}.mp3`);
     audio.preload = "auto";
-    audioCache.set(n, audio);
-  }
-  
-  // Reset audio to beginning
-  try {
-    audio.currentTime = 0;
-  } catch (e) {
-    // Ignore reset errors
+    debugLog(`[Play] Created new audio, readyState: ${audio.readyState}`);
+    // Load immediately
+    audio.load();
+  } else {
+    // Desktop: Reuse cached audio
+    audio = audioCache.get(n);
+    if (!audio) {
+      const filename = String(n);
+      audio = new Audio(`${AUDIO_BASE_PATH}/${filename}.mp3`);
+      audio.preload = "auto";
+      audioCache.set(n, audio);
+    }
+    
+    // Reset audio to beginning
+    try {
+      audio.currentTime = 0;
+    } catch (e) {
+      // Ignore reset errors
+    }
   }
 
   currentAudio = audio;
@@ -161,19 +223,32 @@ export function playNumberAudio(number) {
   const playPromise = audio.play();
   
   if (playPromise !== undefined) {
-    playPromise.catch((error) => {
-      console.warn(`Play failed for number ${n}:`, error);
-      // Don't retry, just log - game continues
-    });
+    playPromise
+      .then(() => {
+        debugLog(`[Play] ✓ Number ${n} playing`);
+      })
+      .catch((error) => {
+        debugLog(`[Play] ✗ Number ${n} failed: ${error.name}`);
+      });
   }
 
   // Cleanup when audio ends
   audio.addEventListener(
     "ended",
     () => {
+      debugLog(`[Play] Number ${n} ended`);
       if (currentAudio === audio) {
         currentAudio = null;
       }
+    },
+    { once: true }
+  );
+  
+  // Add error listener
+  audio.addEventListener(
+    "error",
+    (e) => {
+      debugLog(`[Play] Error event for ${n}`);
     },
     { once: true }
   );
