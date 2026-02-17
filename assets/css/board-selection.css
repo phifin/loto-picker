@@ -39,6 +39,12 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
+  /* Cho phép scroll nếu có nhiều boards */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px;
 }
 
 .board-btn-wrap {

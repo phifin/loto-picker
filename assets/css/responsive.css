@@ -61,9 +61,7 @@
     grid-template-columns: 1fr;
   }
   
-  #boardsContainer {
-    max-height: calc(100vh - 180px);
-  }
+  /* boardsContainer sẽ tự động fit trong flex container */
 }
 
 /* Desktop pagination for multi-board */

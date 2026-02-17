@@ -105,9 +105,15 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
-  max-height: calc(100vh - 180px);
+  /* Cho phép scroll nếu content quá lớn, nhưng giới hạn trong container */
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 4px;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .board-wrapper {
