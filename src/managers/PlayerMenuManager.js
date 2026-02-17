@@ -47,27 +47,37 @@ export class PlayerMenuManager {
     btnPlayerColor?.addEventListener("click", () => {
       this.elements.playerMoreMenu.classList.remove("open");
       
-      // On mobile, color picker is hidden, so we need to temporarily show it
+      // On mobile, create a temporary visible color input to trigger picker
       if (colorInput) {
-        const wrapper = colorInput.closest('.color-picker-wrap');
-        const wasHidden = wrapper && wrapper.classList.contains('mobile-hidden');
+        // Create a temporary input that's actually visible
+        const tempInput = document.createElement('input');
+        tempInput.type = 'color';
+        tempInput.value = colorInput.value;
+        tempInput.style.cssText = 'position:absolute;opacity:0;pointer-events:none;';
+        document.body.appendChild(tempInput);
         
-        // Temporarily remove mobile-hidden to make it clickable
-        if (wasHidden) {
-          wrapper.classList.remove('mobile-hidden');
-        }
+        // Listen for color change
+        tempInput.addEventListener('change', (e) => {
+          // Update the real color input
+          colorInput.value = e.target.value;
+          // Trigger change event on real input
+          const changeEvent = new Event('input', { bubbles: true });
+          colorInput.dispatchEvent(changeEvent);
+          // Remove temp input
+          document.body.removeChild(tempInput);
+        });
         
-        // Trigger click
+        // Trigger click on temp input
         setTimeout(() => {
-          colorInput.click();
-          
-          // Restore mobile-hidden after a short delay
-          if (wasHidden) {
-            setTimeout(() => {
-              wrapper.classList.add('mobile-hidden');
-            }, 100);
-          }
+          tempInput.click();
         }, 10);
+        
+        // Cleanup if user cancels (after 5 seconds)
+        setTimeout(() => {
+          if (tempInput.parentNode) {
+            document.body.removeChild(tempInput);
+          }
+        }, 5000);
       }
     });
   }
