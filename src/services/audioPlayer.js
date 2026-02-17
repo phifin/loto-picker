@@ -12,56 +12,12 @@ let currentAudio = null;
 let audioContextUnlocked = false;
 let silentAudio = null; // Keep audio context alive on mobile
 
-// Debug logger for mobile
-const debugLogs = [];
-const MAX_DEBUG_LOGS = 10;
-
-function debugLog(message) {
-  console.log(message);
-  debugLogs.push(`${new Date().toLocaleTimeString()}: ${message}`);
-  if (debugLogs.length > MAX_DEBUG_LOGS) {
-    debugLogs.shift();
-  }
-  updateDebugUI();
-}
-
-function updateDebugUI() {
-  let debugEl = document.getElementById('audioDebug');
-  if (!debugEl) {
-    debugEl = document.createElement('div');
-    debugEl.id = 'audioDebug';
-    debugEl.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-size:10px;padding:8px;max-height:150px;overflow-y:auto;z-index:9999;font-family:monospace;';
-    document.body.appendChild(debugEl);
-  }
-  debugEl.innerHTML = debugLogs.join('<br>');
-  debugEl.scrollTop = debugEl.scrollHeight;
-}
-
-// Clear debug on double tap
-if (typeof window !== 'undefined') {
-  let lastTap = 0;
-  document.addEventListener('touchend', (e) => {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap;
-    if (tapLength < 300 && tapLength > 0) {
-      const debugEl = document.getElementById('audioDebug');
-      if (debugEl && e.target === debugEl) {
-        debugLogs.length = 0;
-        updateDebugUI();
-      }
-    }
-    lastTap = currentTime;
-  });
-}
-
 /**
  * Unlock audio context on mobile (requires user interaction)
  * This is called on first user interaction
  */
 async function unlockAudioContext() {
   if (audioContextUnlocked) return true;
-  
-  debugLog('[Unlock] Attempting to unlock audio context');
   
   try {
     // Create a silent audio to test unlock
@@ -71,10 +27,9 @@ async function unlockAudioContext() {
     await unlockAudio.play();
     unlockAudio.pause();
     audioContextUnlocked = true;
-    debugLog('[Unlock] Audio context unlocked');
     return true;
   } catch (error) {
-    debugLog(`[Unlock] Failed: ${error.name} - ${error.message}`);
+    console.warn('Failed to unlock audio context:', error);
     return false;
   }
 }
@@ -89,8 +44,6 @@ export async function startSilentAudio() {
   const isMobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (!isMobile) return; // Only needed on mobile
   
-  debugLog('[Silent] Starting silent audio loop');
-  
   try {
     silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQQAAAAAAA==");
     silentAudio.loop = true;
@@ -98,9 +51,8 @@ export async function startSilentAudio() {
     
     await silentAudio.play();
     audioContextUnlocked = true;
-    debugLog('[Silent] Loop started successfully');
   } catch (error) {
-    debugLog(`[Silent] Failed to start: ${error.name}`);
+    console.warn('Failed to start silent audio:', error);
   }
 }
 
@@ -111,7 +63,6 @@ export function stopSilentAudio() {
   if (silentAudio) {
     silentAudio.pause();
     silentAudio = null;
-    debugLog('[Silent] Loop stopped');
   }
 }
 
@@ -120,8 +71,6 @@ export function stopSilentAudio() {
  */
 export function initAudioContext() {
   if (audioContextUnlocked) return;
-  
-  debugLog('[Init] Setting up audio context unlock listeners');
   
   // Unlock on any user interaction
   const unlockEvents = ["touchstart", "touchend", "mousedown", "keydown", "click"];
@@ -212,7 +161,6 @@ export function stopCurrentAudio() {
     }
     currentAudio = null;
   }
-  debugLog('[Stop] Current audio stopped');
 }
 
 /**
@@ -222,13 +170,10 @@ export function playNumberAudio(number) {
   const n = Number(number);
   if (!Number.isInteger(n) || n < 1 || n > 90) return;
 
-  debugLog(`[Play] Number ${n} - Starting`);
-
   // Stop any currently playing audio
   stopCurrentAudio();
 
   const isMobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  debugLog(`[Play] isMobile: ${isMobile}, unlocked: ${audioContextUnlocked}`);
   
   let audio;
   
@@ -237,7 +182,6 @@ export function playNumberAudio(number) {
     const filename = String(n);
     audio = new Audio(`${AUDIO_BASE_PATH}/${filename}.mp3`);
     audio.preload = "auto";
-    debugLog(`[Play] Created new audio, readyState: ${audio.readyState}`);
     // Load immediately
     audio.load();
   } else {
@@ -264,32 +208,18 @@ export function playNumberAudio(number) {
   const playPromise = audio.play();
   
   if (playPromise !== undefined) {
-    playPromise
-      .then(() => {
-        debugLog(`[Play] ✓ Number ${n} playing`);
-      })
-      .catch((error) => {
-        debugLog(`[Play] ✗ Number ${n} failed: ${error.name}`);
-      });
+    playPromise.catch((error) => {
+      console.warn(`Audio play failed for number ${n}:`, error.name);
+    });
   }
 
   // Cleanup when audio ends
   audio.addEventListener(
     "ended",
     () => {
-      debugLog(`[Play] Number ${n} ended`);
       if (currentAudio === audio) {
         currentAudio = null;
       }
-    },
-    { once: true }
-  );
-  
-  // Add error listener
-  audio.addEventListener(
-    "error",
-    (e) => {
-      debugLog(`[Play] Error event for ${n}`);
     },
     { once: true }
   );
