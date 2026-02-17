@@ -130,20 +130,15 @@ export function stopCurrentAudio() {
 }
 
 /**
- * Play audio for a number with improved mobile support
- * Returns a promise that resolves when audio starts playing or rejects on error
+ * Play audio for a number - simple and reliable
  */
 export function playNumberAudio(number) {
   const n = Number(number);
-  if (!Number.isInteger(n) || n < 1 || n > 90) {
-    return Promise.reject(new Error('Invalid number'));
-  }
+  if (!Number.isInteger(n) || n < 1 || n > 90) return;
 
   // Stop any currently playing audio
   stopCurrentAudio();
 
-  const isMobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  
   // Always try to get from cache first, create new if not exists
   let audio = audioCache.get(n);
   if (!audio) {
@@ -162,108 +157,25 @@ export function playNumberAudio(number) {
 
   currentAudio = audio;
 
-  // Return a promise for better control flow
-  return new Promise(async (resolve, reject) => {
-    // On mobile, ensure audio context is unlocked before playing
-    if (isMobile && !audioContextUnlocked) {
-      const unlocked = await unlockAudioContext();
-      if (!unlocked) {
-        console.warn('Audio context not unlocked, attempting to play anyway');
+  // Simple play with error handling
+  const playPromise = audio.play();
+  
+  if (playPromise !== undefined) {
+    playPromise.catch((error) => {
+      console.warn(`Play failed for number ${n}:`, error);
+      // Don't retry, just log - game continues
+    });
+  }
+
+  // Cleanup when audio ends
+  audio.addEventListener(
+    "ended",
+    () => {
+      if (currentAudio === audio) {
+        currentAudio = null;
       }
-    }
-
-    let playAttempted = false;
-    let timeoutId = null;
-
-    const cleanup = () => {
-      if (timeoutId) clearTimeout(timeoutId);
-      audio.removeEventListener("canplaythrough", onCanPlayThrough);
-      audio.removeEventListener("loadeddata", onLoadedData);
-      audio.removeEventListener("error", onError);
-    };
-
-    const attemptPlay = async () => {
-      if (playAttempted) return;
-      playAttempted = true;
-      cleanup();
-      
-      try {
-        // Attempt to play
-        await audio.play();
-        resolve();
-      } catch (error) {
-        console.warn(`Play failed for number ${n}:`, error);
-        
-        // On mobile, if play fails due to NotAllowedError, try to unlock again
-        if (isMobile && error.name === 'NotAllowedError') {
-          try {
-            await unlockAudioContext();
-            await audio.play();
-            resolve();
-          } catch (retryError) {
-            reject(retryError);
-          }
-        } else {
-          reject(error);
-        }
-      }
-    };
-
-    const onCanPlayThrough = () => {
-      attemptPlay();
-    };
-
-    const onLoadedData = () => {
-      // If we have enough data, try to play
-      if (audio.readyState >= 2) {
-        attemptPlay();
-      }
-    };
-
-    const onError = (error) => {
-      cleanup();
-      console.warn(`Audio load error for number ${n}:`, error);
-      reject(error);
-    };
-
-    // Set up event listeners
-    audio.addEventListener("canplaythrough", onCanPlayThrough, { once: true });
-    audio.addEventListener("loadeddata", onLoadedData, { once: true });
-    audio.addEventListener("error", onError, { once: true });
-
-    // If audio is already ready, play immediately
-    if (audio.readyState >= 3) {
-      attemptPlay();
-    } else if (audio.readyState >= 2) {
-      // Has enough data to start playing
-      attemptPlay();
-    } else {
-      // Trigger load if needed
-      if (audio.readyState === 0) {
-        audio.load();
-      }
-      
-      // Timeout fallback - try to play anyway after 1.5 seconds
-      timeoutId = setTimeout(() => {
-        if (!playAttempted && audio.readyState >= 1) {
-          attemptPlay();
-        } else if (!playAttempted) {
-          cleanup();
-          reject(new Error(`Audio not ready after timeout for number ${n}`));
-        }
-      }, 1500);
-    }
-
-    // Cleanup when audio ends
-    audio.addEventListener(
-      "ended",
-      () => {
-        if (currentAudio === audio) {
-          currentAudio = null;
-        }
-      },
-      { once: true }
-    );
-  });
+    },
+    { once: true }
+  );
 }
 

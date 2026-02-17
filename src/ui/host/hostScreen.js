@@ -31,15 +31,8 @@ export class HostController {
 
   // --- NumberCaller bridges ---
   _onNumberCalled(number) {
-    // Play audio and handle the result
-    playNumberAudio(number)
-      .then(() => {
-        // Audio started successfully
-      })
-      .catch((error) => {
-        // Audio failed to play - log but continue with game logic
-        console.warn(`Audio playback failed for number ${number}:`, error);
-      });
+    // Play audio (fire and forget)
+    playNumberAudio(number);
 
     if (!this.autoTick) return;
 
