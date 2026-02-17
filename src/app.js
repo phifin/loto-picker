@@ -132,9 +132,15 @@ if (elements.btnRoleUser) {
 }
 
 if (elements.btnRoleHost) {
-  elements.btnRoleHost.onclick = () => {
+  elements.btnRoleHost.onclick = async () => {
     currentRole = "host";
     document.body.classList.add("host-mode");
+    
+    // Unlock audio context immediately when entering host mode
+    // This ensures audio will work when auto-calling starts
+    const { initAudioContext } = await import("./services/audioPlayer.js");
+    initAudioContext();
+    
     uiManager.setStep("selectMode");
   };
 }

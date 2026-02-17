@@ -1,5 +1,5 @@
 import { NumberCaller } from "../../services/numberCaller.js";
-import { playNumberAudio, stopCurrentAudio } from "../../services/audioPlayer.js";
+import { playNumberAudio, stopCurrentAudio, initAudioContext } from "../../services/audioPlayer.js";
 import { HostToolbar } from "./hostToolbar.js";
 import { saveMarked, clearMarked } from "../../services/storage.js";
 
@@ -31,7 +31,15 @@ export class HostController {
 
   // --- NumberCaller bridges ---
   _onNumberCalled(number) {
-    playNumberAudio(number);
+    // Play audio and handle the result
+    playNumberAudio(number)
+      .then(() => {
+        // Audio started successfully
+      })
+      .catch((error) => {
+        // Audio failed to play - log but continue with game logic
+        console.warn(`Audio playback failed for number ${number}:`, error);
+      });
 
     if (!this.autoTick) return;
 
@@ -76,6 +84,9 @@ export class HostController {
   }
 
   start() {
+    // Ensure audio context is unlocked before starting
+    initAudioContext();
+    
     this.numberCaller.start();
   }
 
