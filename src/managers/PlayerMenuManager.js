@@ -46,7 +46,29 @@ export class PlayerMenuManager {
 
     btnPlayerColor?.addEventListener("click", () => {
       this.elements.playerMoreMenu.classList.remove("open");
-      colorInput?.click();
+      
+      // On mobile, color picker is hidden, so we need to temporarily show it
+      if (colorInput) {
+        const wrapper = colorInput.closest('.color-picker-wrap');
+        const wasHidden = wrapper && wrapper.classList.contains('mobile-hidden');
+        
+        // Temporarily remove mobile-hidden to make it clickable
+        if (wasHidden) {
+          wrapper.classList.remove('mobile-hidden');
+        }
+        
+        // Trigger click
+        setTimeout(() => {
+          colorInput.click();
+          
+          // Restore mobile-hidden after a short delay
+          if (wasHidden) {
+            setTimeout(() => {
+              wrapper.classList.add('mobile-hidden');
+            }, 100);
+          }
+        }, 10);
+      }
     });
   }
 }
