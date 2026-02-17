@@ -92,6 +92,11 @@ export function setupEventHandlers(
 
   // Back button handler
   btnBack.onclick = () => {
+    // Stop silent audio if in host mode
+    import("../services/audioPlayer.js").then(({ stopSilentAudio }) => {
+      stopSilentAudio();
+    });
+    
     gameState.clearState();
     uiManager.clearBoard();
     

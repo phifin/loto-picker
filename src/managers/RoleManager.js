@@ -48,6 +48,16 @@ export class RoleManager {
   backToRoleSelection() {
     // Clear any mode-specific state
     this.multiBoardMgr.reset();
+    
+    // Stop audio if in host mode
+    if (this.currentRole === "host") {
+      // Dynamically import to avoid circular dependency
+      import("../services/audioPlayer.js").then(({ stopSilentAudio, stopCurrentAudio }) => {
+        stopCurrentAudio();
+        stopSilentAudio();
+      });
+    }
+    
     // Reset role
     this.currentRole = null;
     document.body.classList.remove("host-mode");

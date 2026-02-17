@@ -10,6 +10,7 @@ const audioCache = new Map();
 let preloadPromise = null;
 let currentAudio = null;
 let audioContextUnlocked = false;
+let silentAudio = null; // Keep audio context alive on mobile
 
 // Debug logger for mobile
 const debugLogs = [];
@@ -55,6 +56,7 @@ if (typeof window !== 'undefined') {
 
 /**
  * Unlock audio context on mobile (requires user interaction)
+ * This is called on first user interaction
  */
 async function unlockAudioContext() {
   if (audioContextUnlocked) return true;
@@ -62,14 +64,14 @@ async function unlockAudioContext() {
   debugLog('[Unlock] Attempting to unlock audio context');
   
   try {
-    // Create a silent audio to unlock audio context
+    // Create a silent audio to test unlock
     const unlockAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQQAAAAAAA==");
-    unlockAudio.volume = 0.01;
+    unlockAudio.volume = 0;
     
     await unlockAudio.play();
     unlockAudio.pause();
     audioContextUnlocked = true;
-    debugLog('[Unlock] Audio context unlocked successfully');
+    debugLog('[Unlock] Audio context unlocked');
     return true;
   } catch (error) {
     debugLog(`[Unlock] Failed: ${error.name} - ${error.message}`);
@@ -78,10 +80,48 @@ async function unlockAudioContext() {
 }
 
 /**
+ * Start silent audio loop to keep audio context alive (mobile only)
+ * Call this when entering host game screen
+ */
+export async function startSilentAudio() {
+  if (silentAudio) return; // Already running
+  
+  const isMobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (!isMobile) return; // Only needed on mobile
+  
+  debugLog('[Silent] Starting silent audio loop');
+  
+  try {
+    silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQQAAAAAAA==");
+    silentAudio.loop = true;
+    silentAudio.volume = 0;
+    
+    await silentAudio.play();
+    audioContextUnlocked = true;
+    debugLog('[Silent] Loop started successfully');
+  } catch (error) {
+    debugLog(`[Silent] Failed to start: ${error.name}`);
+  }
+}
+
+/**
+ * Stop the silent audio loop (call when leaving host game screen)
+ */
+export function stopSilentAudio() {
+  if (silentAudio) {
+    silentAudio.pause();
+    silentAudio = null;
+    debugLog('[Silent] Loop stopped');
+  }
+}
+
+/**
  * Initialize audio context unlock (call on first user interaction)
  */
 export function initAudioContext() {
   if (audioContextUnlocked) return;
+  
+  debugLog('[Init] Setting up audio context unlock listeners');
   
   // Unlock on any user interaction
   const unlockEvents = ["touchstart", "touchend", "mousedown", "keydown", "click"];
@@ -172,6 +212,7 @@ export function stopCurrentAudio() {
     }
     currentAudio = null;
   }
+  debugLog('[Stop] Current audio stopped');
 }
 
 /**

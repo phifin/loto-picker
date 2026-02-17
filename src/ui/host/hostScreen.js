@@ -1,5 +1,5 @@
 import { NumberCaller } from "../../services/numberCaller.js";
-import { playNumberAudio, stopCurrentAudio, initAudioContext } from "../../services/audioPlayer.js";
+import { playNumberAudio, stopCurrentAudio, stopSilentAudio, startSilentAudio, initAudioContext } from "../../services/audioPlayer.js";
 import { HostToolbar } from "./hostToolbar.js";
 import { saveMarked, clearMarked } from "../../services/storage.js";
 
@@ -80,6 +80,9 @@ export class HostController {
     // Ensure audio context is unlocked before starting
     initAudioContext();
     
+    // Start silent audio loop to keep context alive on mobile
+    startSilentAudio();
+    
     this.numberCaller.start();
   }
 
@@ -103,6 +106,7 @@ export class HostController {
     // Stop everything
     this.numberCaller.reset();
     stopCurrentAudio();
+    stopSilentAudio(); // Stop silent audio loop
 
     // Clear ticks on board(s)
     this.ui.resetMarkedCells();
