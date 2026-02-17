@@ -116,6 +116,14 @@ class LotoApp {
 
   start() {
     this.uiManager.showMode();
+    
+    // Prevent auto-focus on buttons (mobile browsers sometimes do this)
+    setTimeout(() => {
+      if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
+        document.activeElement.blur();
+      }
+    }, 100);
+    
     this.loadingManager.hideAfterRender();
   }
 }

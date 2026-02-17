@@ -71,6 +71,13 @@ export class ScreenManager {
         break;
       }
     }
+    
+    // Blur any focused button to prevent unwanted hover states
+    setTimeout(() => {
+      if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
+        document.activeElement.blur();
+      }
+    }, 50);
   }
 
   // Backwards-compatible helpers used by UIManager
