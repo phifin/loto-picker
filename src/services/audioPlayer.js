@@ -10,23 +10,81 @@ const audioCache = new Map();
 let preloadPromise = null;
 let currentAudio = null;
 let audioContextUnlocked = false;
-let silentAudio = null; // Keep audio context alive on mobile
+
+// Web Audio API context for mobile
+let audioContext = null;
+let oscillatorNode = null; // Keep context alive
+
+/**
+ * Get or create AudioContext
+ */
+function getAudioContext() {
+  if (!audioContext) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      audioContext = new AudioContextClass();
+    }
+  }
+  return audioContext;
+}
+
+/**
+ * Start oscillator to keep audio context alive on mobile
+ */
+function startAudioContextKeepAlive() {
+  const ctx = getAudioContext();
+  if (!ctx || oscillatorNode) return;
+  
+  try {
+    // Create a silent oscillator that keeps context alive
+    oscillatorNode = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    gainNode.gain.value = 0; // Silent
+    oscillatorNode.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    oscillatorNode.start();
+    console.log('[Audio] Keep-alive oscillator started');
+  } catch (error) {
+    console.warn('[Audio] Failed to start keep-alive:', error);
+  }
+}
+
+/**
+ * Stop oscillator
+ */
+function stopAudioContextKeepAlive() {
+  if (oscillatorNode) {
+    try {
+      oscillatorNode.stop();
+      oscillatorNode.disconnect();
+    } catch (e) {
+      // Ignore
+    }
+    oscillatorNode = null;
+    console.log('[Audio] Keep-alive oscillator stopped');
+  }
+}
 
 /**
  * Unlock audio context on mobile (requires user interaction)
- * This is called on first user interaction
  */
 async function unlockAudioContext() {
   if (audioContextUnlocked) return true;
   
   try {
-    // Create a silent audio to test unlock
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      await ctx.resume();
+    }
+    
+    // Also try HTML5 audio unlock
     const unlockAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQQAAAAAAA==");
     unlockAudio.volume = 0;
-    
     await unlockAudio.play();
     unlockAudio.pause();
+    
     audioContextUnlocked = true;
+    console.log('[Audio] Context unlocked');
     return true;
   } catch (error) {
     console.warn('Failed to unlock audio context:', error);
@@ -39,31 +97,21 @@ async function unlockAudioContext() {
  * Call this when entering host game screen
  */
 export async function startSilentAudio() {
-  if (silentAudio) return; // Already running
-  
   const isMobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (!isMobile) return; // Only needed on mobile
   
-  try {
-    silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQQAAAAAAA==");
-    silentAudio.loop = true;
-    silentAudio.volume = 0;
-    
-    await silentAudio.play();
-    audioContextUnlocked = true;
-  } catch (error) {
-    console.warn('Failed to start silent audio:', error);
-  }
+  // Unlock audio context first
+  await unlockAudioContext();
+  
+  // Start Web Audio API keep-alive
+  startAudioContextKeepAlive();
 }
 
 /**
  * Stop the silent audio loop (call when leaving host game screen)
  */
 export function stopSilentAudio() {
-  if (silentAudio) {
-    silentAudio.pause();
-    silentAudio = null;
-  }
+  stopAudioContextKeepAlive();
 }
 
 /**
@@ -174,6 +222,14 @@ export function playNumberAudio(number) {
   stopCurrentAudio();
 
   const isMobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  // Resume audio context if suspended (mobile)
+  if (isMobile) {
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(e => console.warn('Failed to resume context:', e));
+    }
+  }
   
   let audio;
   
