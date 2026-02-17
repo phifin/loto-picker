@@ -66,7 +66,14 @@ export function setupEventHandlers(
   });
 
   // Reset button handler
-  btnReset.onclick = () => {
+  btnReset.onclick = (e) => {
+    // In host mode, reset is handled by hostToolbar (with confirmation modal)
+    // Check if body has host-mode class
+    if (document.body.classList.contains('host-mode')) {
+      return; // Let hostToolbar handle it
+    }
+    
+    // User mode: reset immediately
     uiManager.resetMarkedCells();
     inputEl.value = "";
     
